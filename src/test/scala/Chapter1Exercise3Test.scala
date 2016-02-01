@@ -5,7 +5,7 @@
  */
 import org.junit._
 import Assert._
-import EdgarModule._
+import edgarmodule._
 class Chapter1Exercise3Test{
 
   @Test 

@@ -1,4 +1,4 @@
-import EdgarModule._
+import edgarmodule._
 import org.scalatest._
 import org.scalamock.scalatest.MockFactory
 import Matchers._
