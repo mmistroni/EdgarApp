@@ -251,7 +251,7 @@ object FutureAppRetrieverEdgar extends App {
     val latestFilingFile = ftpClient.downloadLatestFilingFile()
     val fileContent = latestFilingFile.split("\n")
     val form4Files = fileContent.map(ln => ln.split('|')) filter { arr => arr.size > 4 && arr(2) == "4" } map { arr => arr(4) }
-
+    
     val ftpClient2 = new FTPEdgarDownloader("anonymous", "mmistroni@gmail.com2", "ftp.sec.gov")
     val form4Contents = ftpClient2.downloadFiles(form4Files.take(1)).map {
       fileStr => fileStr.substring(fileStr.indexOf("<ownershipDocument>"), fileStr.indexOf("</XML"))

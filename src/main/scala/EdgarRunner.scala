@@ -13,43 +13,66 @@ import edgarmodule._
 object EdgarRunner extends App {
   println("Kicking off EdgarModule")
 
-  def getFilingFiles(filingFiles:List[String], edgarClient:EdgarModule):Future[Seq[String]]  = {
-    Future {
-      for (filingFile <- filingFiles) yield edgarClient.downloadFile(filingFile)
-    }
-  }
-  
-  
-  def getEgarMasterIndexesFuture(baseDirName:String, edgarClient:EdgarModule):Future[List[String]]  = {
-    Future {
-      edgarClient.list(baseDirName)
-    }
-  }
-  
-  def getEdgarClient(hostPwd:String):EdgarModule = {
-    new EdgarModule {
+  val edgarClient = new EdgarModule {
       val ftpClient = new ApacheFTPClient {
         val ftpConfig = new FtpConfig {
           val username = "anonymous"
-          val password = hostPwd
+          val password = "tmp2@gmail.com"
           val host = "ftp.sec.gov"
         }
       }
     }
-  }
-
+  
+  // Future 1. Retrieve All Filng Files
+  def getFilingFiles(filingFiles:List[String], edgarClient:EdgarModule):Future[Seq[String]]  = Future {
+      for (filingFile <- filingFiles) yield edgarClient.downloadFile(filingFile)
+    }
+  // Future 2. Get All Files in MasterDir
+  def getEgarMasterIndexesFuture(baseDirName:String, edgarClient:EdgarModule):Future[List[String]]  = Future {
+      edgarClient.list(baseDirName)
+    }
+  
   def extractContent(fileContent:String):List[String] = {
     fileContent.split("\n").toList
   }
   
+  // Future 3. process the List of files
+  def processList(dirContent:List[String]):Future[List[String]] = Future {
+    val latest = dirContent.last
+    edgarClient.downloadFile(s"edgar/daily-index/$latest").split("\n").toList
+  }
   
-  val edgarClient = getEdgarClient("tmp")
+  // Future4 . filter lines  we are interested in
+  def filterLines(fileLines:List[String]):Future[List[String]] = Future {
+    fileLines.filter(line => line.split('|').size > 2 && line.split('|')(2) == "4")
+  }
+  
   
   val allFilesFuture = getEgarMasterIndexesFuture("edgar/daily-index", edgarClient)
+            .flatMap { listOfFiles => processList(listOfFiles) }
+            .flatMap { lines => filterLines(lines)}
+            
+            
+  allFilesFuture onSuccess {
+    case lines => lines.foreach(println)
+  }
+              
+                  
+  /**
+  val latestIndexFile = allFilesFuture.map(masterIndexList => masterIndexList.last).map(
+                                latestFile => edgarClient.downloadFile(s"edgar/daily-index/$latestFile")).map{ content => extractContent(content)}
+                                    
+                                    
+  latestIndexFile onSuccess {
+    case latestIndexLines => latestIndexLines.filter {line => line.split("|").size > 2}.foreach(arr => println(arr))
+  }
+                                
+  
   
   allFilesFuture onSuccess {
     case  latestFileList => {
       val latest = latestFileList.last
+      println("lates tis:" + latest)
       val fut = Future {
               edgarClient.downloadFile(s"edgar/daily-index/$latest")
       }
@@ -78,8 +101,8 @@ object EdgarRunner extends App {
   }
       
  
- 
+  **/
   
-  Thread.sleep(20000)
+  Thread.sleep(30000)
   
 }
