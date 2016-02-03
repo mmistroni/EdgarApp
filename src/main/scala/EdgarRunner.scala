@@ -9,100 +9,64 @@ import scala.util.{ Success, Failure }
 import scala.io._
 import scala.xml.XML
 
-import edgarmodule._
+import edgar.core._
 object EdgarRunner extends App {
   println("Kicking off EdgarModule")
 
   val edgarClient = new EdgarModule {
-      val ftpClient = new ApacheFTPClient {
-        val ftpConfig = new FtpConfig {
-          val username = "anonymous"
-          val password = "tmp2@gmail.com"
-          val host = "ftp.sec.gov"
-        }
+    val ftpClient = new ApacheFTPClient {
+      val ftpConfig = new FtpConfig {
+        val username = "anonymous"
+        val password = "tmp2@gmail.com"
+        val host = "ftp.sec.gov"
       }
     }
-  
+  }
+
   // Future 1. Retrieve All Filng Files
-  def getFilingFiles(filingFiles:List[String], edgarClient:EdgarModule):Future[Seq[String]]  = Future {
-      for (filingFile <- filingFiles) yield edgarClient.downloadFile(filingFile)
-    }
+  def getFilingFiles(filingFiles: List[(String, String, String)]): Future[List[String]] = Future {
+
+    val xmlContents = for ((cik, form, filingFile) <- filingFiles) yield edgarClient.downloadFile(filingFile)
+
+    xmlContents.map(content => content.substring(content.indexOf("<ownershipDocument>"), content.indexOf("</XML")))
+
+  }
+
   // Future 2. Get All Files in MasterDir
-  def getEgarMasterIndexesFuture(baseDirName:String, edgarClient:EdgarModule):Future[List[String]]  = Future {
-      edgarClient.list(baseDirName)
-    }
-  
-  def extractContent(fileContent:String):List[String] = {
+  def getEgarMasterIndexesFuture(baseDirName: String, edgarClient: EdgarModule): Future[List[String]] = Future {
+    edgarClient.list(baseDirName)
+  }
+
+  def extractContent(fileContent: String): List[String] = {
     fileContent.split("\n").toList
   }
-  
+
   // Future 3. process the List of files
-  def processList(dirContent:List[String]):Future[List[String]] = Future {
+  def processList(dirContent: List[String], edgarClient: EdgarModule): Future[List[String]] = Future {
     val latest = dirContent.last
     edgarClient.downloadFile(s"edgar/daily-index/$latest").split("\n").toList
   }
-  
+
   // Future4 . filter lines  we are interested in
-  def filterLines(fileLines:List[String]):Future[List[String]] = Future {
+  def filterLines(fileLines: List[String]): Future[List[String]] = Future {
     fileLines.filter(line => line.split('|').size > 2 && line.split('|')(2) == "4")
   }
-  
-  
+
   val allFilesFuture = getEgarMasterIndexesFuture("edgar/daily-index", edgarClient)
-            .flatMap { listOfFiles => processList(listOfFiles) }
-            .flatMap { lines => filterLines(lines)}
-            
-            
+    .flatMap { listOfFiles => processList(listOfFiles, edgarClient) }
+    .flatMap { lines => filterLines(lines) }
+
   allFilesFuture onSuccess {
-    case lines => lines.foreach(println)
-  }
-              
-                  
-  /**
-  val latestIndexFile = allFilesFuture.map(masterIndexList => masterIndexList.last).map(
-                                latestFile => edgarClient.downloadFile(s"edgar/daily-index/$latestFile")).map{ content => extractContent(content)}
-                                    
-                                    
-  latestIndexFile onSuccess {
-    case latestIndexLines => latestIndexLines.filter {line => line.split("|").size > 2}.foreach(arr => println(arr))
-  }
-                                
-  
-  
-  allFilesFuture onSuccess {
-    case  latestFileList => {
-      val latest = latestFileList.last
-      println("lates tis:" + latest)
-      val fut = Future {
-              edgarClient.downloadFile(s"edgar/daily-index/$latest")
-      }
-      
-      fut onSuccess {
-        case content => {
-            val contentFut = Future {  
-                                        val fileContent = extractContent(content).filter {line => line.split("|").size > 2}
-                                        fileContent.map { ln => ln.split('|') } filter { arr => arr.size > 4 && arr(2) == "4" }
-                                    } 
-        
-            contentFut onSuccess {
-              case lines => {
-                          lines.foreach(arr => println((arr(0), arr(2), arr(4))))
-                
-              }
-            }
-            
-        }
+    case lines => {
+      val tpls = lines.map(ln => ln.split('|')).map(lnArr => (lnArr(0), lnArr(2), lnArr(4)))
+      val contentFut = getFilingFiles(tpls.take(10))
+      contentFut onSuccess {
+        case xmlContents => { println(xmlContents) }
       }
     }
+
   }
-  
-  allFilesFuture onFailure {
-    case ex => println("Exception on all files future :"  +ex)
-  }
-      
- 
-  **/
-  
+
   Thread.sleep(30000)
-  
+
 }

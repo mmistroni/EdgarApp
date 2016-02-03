@@ -4,7 +4,7 @@ import org.apache.commons.net.ftp.FTPClient
 import scala.io._
 import java.io._
 
-package edgarmodule {
+package edgar.core {
 
   /** Below are components of the Cake pattern **/
   trait FtpClientComponent {
