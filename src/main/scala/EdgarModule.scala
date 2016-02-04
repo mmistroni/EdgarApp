@@ -144,6 +144,15 @@ package edgar.core {
 
   }
   
+  
+  class ApacheFTPClientImpl(_username:String, _password:String, _host:String) extends ApacheFTPClient {
+    val ftpConfig = new FtpConfig {
+        val username = _username
+        val password = _password
+        val host = _host
+      }
+  }
+  
 }
   
   

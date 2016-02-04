@@ -1,5 +1,9 @@
 
 import akka.actor._
+import edgar.core._
+import scala.xml.XML
+import akka.event.Logging
+
 package edgar.actors {
 
   sealed trait EdgarRequest
@@ -14,7 +18,7 @@ package edgar.actors {
 
   case class DownloadFile(filePath: String)
 
-  case class FilteredFiles(files: List[String])
+  case class FilteredFiles(files: List[(String, String, String)])
 
   case class FileContent(content: String)
 
@@ -22,16 +26,16 @@ package edgar.actors {
 
   case object Shutdown
 
-  class IndexRetriever extends Actor {
+  class IndexRetriever(edgarClient:EdgarModule,
+                       indexDir:String) extends Actor {
 
+    val log = Logging(context.system, this)
     def receive = {
 
       case DownloadLatestIndex => {
-
-        println("Retriever. retrieving latest index")
-
-        sender ! FileIndex("master-idx.txt")
-
+        log.info("Retriever. retrieving latest index")
+        val latestFile = edgarClient.list(indexDir).last
+        sender ! FileIndex(s"$indexDir/$latestFile")
       }
 
     }
@@ -39,14 +43,23 @@ package edgar.actors {
   }
 
   class IndexProcessor(edgarFileManager: ActorRef) extends Actor {
-
+    val filterFunction = (lineArray:Array[String]) => lineArray.size > 2 && lineArray(2) == "4"
+    val log = Logging(context.system, this)
+    
+    def processContent(content:String):List[(String, String, String)] = {
+      val lines = content.split("\n").toList.map(ln => ln.split('|'))
+      //lineArray => lineArray.size > 2 && lineArray(2) == "4"
+      lines.filter(filterFunction).map(arr=>(arr(0), arr(2), arr(4)))
+    }
+    
     def receive = {
 
       case ProcessIndexFile(fileContent: String) => {
 
-        println("Processor.Processing")
-
-        edgarFileManager ! FilteredFiles(List("/edgar/data/file1", "/edgar/data/file2"))
+        log.info("Processor.Processing")
+        val arrList = processContent(fileContent)
+        log.info("Sending msg with:" + arrList.size + " elements") 
+        edgarFileManager ! FilteredFiles(arrList)
 
       }
 
@@ -55,19 +68,20 @@ package edgar.actors {
   }
 
   class EdgarFileSink extends Actor {
-
+    val log = Logging(context.system, this)
     var count = 0
 
     def receive = {
 
       case FilingInfo(fileContent: String) => {
-
-        println("FileSink.Processing content")
-
-        println("Storing...:" + count)
-
-        count += 1
-
+        val xmlContent = fileContent.substring(fileContent.indexOf("<ownershipDocument>"), fileContent.indexOf("</XML"))
+        
+        val xml = XML.loadString(xmlContent)
+        
+        val issuerName = xml \\ "issuerName"
+        val issuerCik = xml \\ "issuerCik"
+        val reportingOwnerCik = xml \\ "rptOwnerCik"
+        log.info(s"FileSink.$issuerName|$issuerCik|$reportingOwnerCik")
       }
 
     }
@@ -77,48 +91,45 @@ package edgar.actors {
   class EdgarFileManager(downloader: ActorRef, edgarFileSink: ActorRef) extends Actor {
 
     var fileCount = 0
+    val log = Logging(context.system, this)
 
     def receive = {
 
-      case FilteredFiles(fileList: List[String]) => {
+      case FilteredFiles(fileList: List[(String, String, String)]) => {
 
-        fileCount = fileList.size
+        log.info("FileManager. initialized with:" + fileCount)
 
-        println("FileManager. initialized with:" + fileCount)
-
-        fileList.foreach(item => downloader ! DownloadFile(item))
-
-        downloader ! FilteredFiles(List("/edgar/data/file1", "/edgar/data/file2"))
-
+        fileList.foreach{case (cik:String, form:String, fileName:String) => downloader ! DownloadFile(fileName)}
       }
 
-      case FileContent(xml: String) =>
+      case FileContent(fileContent: String) =>
 
-        edgarFileSink ! FilingInfo(xml)
+        edgarFileSink ! FilingInfo(fileContent)
 
         fileCount -= 1
 
         if (fileCount == 0) {
-
-          println("sending shutdown")
-
-          context.system.shutdown()
-
+          log.info("sending shutdown")
+          context stop self
         }
 
     }
 
   }
 
-  class Downloader extends Actor {
+  class Downloader(edgarClient:EdgarModule) extends Actor {
 
+    val log = Logging(context.system, this)
+    
     def receive = {
 
       case DownloadFile(filePath: String) => {
 
-        println("downloading:" + filePath)
+        log.info("downloading:" + filePath)
 
-        sender ! FileContent("|CIX23|20911|4|COMPANY DATA|EDGAR/data/files")
+        val fileContent = edgarClient.downloadFile(filePath)
+        
+        sender ! FileContent(fileContent)
 
       }
 
@@ -127,41 +138,46 @@ package edgar.actors {
   }
 
   class EdgarMaster(retriever: ActorRef, downloader: ActorRef,
-
                     indexProcessor: ActorRef,
-
                     edgarFileManager: ActorRef) extends Actor {
 
+    val log = Logging(context.system, this)
     var filesToDownload = 0
+    context.watch(edgarFileManager)
 
     def receive = {
 
       case Start =>
 
-        println("Master.I have now to download the latest index")
+        log.info("Master.I have now to download the latest index")
 
         retriever ! DownloadLatestIndex
 
       case FileIndex(fileName) =>
 
-        println("Master.received :" + fileName)
+        log.info("Master.received :" + fileName)
 
         downloader ! DownloadFile(fileName)
 
       case FileContent(content) =>
 
-        println("Master.+call processor.")
+        log.info("Master.+call processor.")
 
         indexProcessor ! ProcessIndexFile(content)
 
-      case Shutdown =>
+      case Terminated(edgarFileManager) =>
 
-        println("Master shutting down")
+        log.info("Master shutting down")
 
-        println("Shutting down")
+        log.info("Shutting down")
 
+        context.system.shutdown()
     }
 
   }
+  
+  
+  
+  
 
 }
