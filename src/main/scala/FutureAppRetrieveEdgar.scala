@@ -5,8 +5,8 @@
  */
 
 import scala.concurrent._
-
 import ExecutionContext.Implicits.global
+import scala.collection.JavaConversions._
 import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -15,8 +15,10 @@ import scala.util.{ Success, Failure }
 import scala.io._
 import scala.xml.XML
 import org.apache.commons.net.ftp.FTPClient
+import org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE
 import scala.io._
 import java.io._
+import org.apache.commons.io.IOUtils
 
 object FutureAppRetrieverEdgar extends App {
 
@@ -36,6 +38,10 @@ object FutureAppRetrieverEdgar extends App {
 
   
   abstract class EdgarDownloader {
+    
+    def connect()
+    
+    def disconnect()
 
     def downloadLatestFilingFile(): String
 
@@ -48,6 +54,8 @@ object FutureAppRetrieverEdgar extends App {
     val ftpClient = new FTPClient()
 
     private def readStream(is: InputStream) = {
+      IOUtils.toString(is, "UTF-8")
+      /**
       println("Reading Stream....")
       val reader = new BufferedReader(new InputStreamReader(is))
       try {
@@ -63,16 +71,26 @@ object FutureAppRetrieverEdgar extends App {
         reader.close()
         is.close()
       }
-
+			**/
     }
 
-    private def connect() = {
+    def connect() = {
       ftpClient.connect(host);
-      ftpClient.login(username, password);
+      ftpClient.login(username, password)
       ftpClient.enterLocalPassiveMode
+      ftpClient.setFileType(BINARY_FILE_TYPE)
+      ftpClient.setRemoteVerificationEnabled(false)
+      ftpClient.setControlKeepAliveTimeout(300)
+      
     }
 
     private def downloadFile(fullPath: String): String = {
+      println("Changing dir..")
+      //ftpClient.changeToParentDirectory()
+      
+      val currfiles = ftpClient.listNames()
+      println("listing files")
+      //currfiles.foreach(println)
       println("Fetching:" + fullPath)
       val inputStream = ftpClient.retrieveFileStream(fullPath)
       println("InputStream for :" + fullPath + "is null?" + (inputStream == null))
@@ -80,16 +98,12 @@ object FutureAppRetrieverEdgar extends App {
     }
 
     def downloadLatestFilingFile(): String = {
-      connect()
       val baseDir = "edgar/daily-index/"
-      val files = ftpClient.listFiles(baseDir).filter(file => file.getName.startsWith("master"))
-      val latestFiling = baseDir + files.last.getName
+      val files = ftpClient.listNames(baseDir).filter(_.contains("master."))
+      val latestFiling = files.last
       println(latestFiling)
-      try {
-        downloadFile(latestFiling)
-      } finally {
-        disconnect()
-      }
+      downloadFile(latestFiling)
+      
     }
 
     private def executeOperation[T](op: FTPClient => T): T = {
@@ -102,31 +116,22 @@ object FutureAppRetrieverEdgar extends App {
     }
 
     private def downloadFilingFile(filingPath: String): String = {
-      connect()
-      try {
-        println("Downloading filingfile:" + filingPath)
-        downloadFile(filingPath)
-      } finally {
-        disconnect()
-      }
+      println("Downloading filingfile:" + filingPath)
+      
+      downloadFile(filingPath)
+      
 
     }
 
     override def downloadFiles(fileList: Seq[String]): List[String] = {
 
       println("Downloading......" )
-      val fileNames = fileList.map(fileName => {
-        val path = fileName.substring(0, fileName.indexOf(".")).replace("-", "");
-        val file = fileName.split("/").last;
-        fileName
-        //s"$path/$file"
-      })
-      val contents = for (fileName <- fileNames) yield downloadFilingFile(fileName)
+      val contents = for (fileName <- fileList) yield downloadFilingFile(fileName)
       contents.toList
 
     }
 
-    private def disconnect() = {
+    def disconnect() = {
       ftpClient.logout()
       ftpClient.disconnect()
     }
@@ -165,7 +170,7 @@ object FutureAppRetrieverEdgar extends App {
 
   val latestFileFunc = (ftpClient: FTPClient) => {
     println("gettin files")
-    val files = ftpClient.listFiles().filter(file => file.getName.startsWith("master"))
+    val files = ftpClient.listFiles("edgar/daily").filter(file => file.getName.startsWith("master"))
     val name = files.last
     println(name.getName)
     name.getName
@@ -234,7 +239,7 @@ object FutureAppRetrieverEdgar extends App {
 
   }
 
-  def testFtpClient(): Unit = {
+  def testFtpClient2(): Unit = {
     println("Now trying to access FTP site agian...")
 
     /**
@@ -263,6 +268,32 @@ object FutureAppRetrieverEdgar extends App {
     }
 
   }
+  
+  def testFtpClient(): Unit = {
+    println("Now trying to access FTP site agian...")
+
+    
+    val ftpClient = new FTPEdgarDownloader("anonymous", "mmistroni@gmail.com", "ftp.sec.gov")
+    ftpClient.connect()
+    val latestFilingFile = ftpClient.downloadLatestFilingFile()
+    val fileContent = latestFilingFile.split("\n")
+    val form4Files = fileContent.map(ln => ln.split('|')) filter { arr => arr.size > 4 && arr(2) == "4" } map { arr => arr(4) }
+    println(form4Files.head)
+    val first = form4Files.head
+    val path = first.substring(0, first.indexOf(".")).replace("-", "")
+    val fileName = first.split("/").last
+    val fullPath = s"$path/$fileName"
+
+    println("Fetching:" + fullPath)
+
+    val newFileContent = ftpClient.downloadFiles(List(fullPath))
+    println(newFileContent)
+    
+
+  }
+
+  
+  
 
   //testFutureFirstCompleted()
   testFtpClient()

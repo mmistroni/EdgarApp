@@ -3,6 +3,8 @@ import scala.xml.XML
 import org.apache.commons.net.ftp.FTPClient
 import scala.io._
 import java.io._
+import org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE
+import org.apache.commons.io.IOUtils
 
 package edgar.core {
 
@@ -88,7 +90,6 @@ package edgar.core {
     val ftpConfig: FtpConfig
 
     protected def readStream(is: InputStream) = {
-      println("Reading Stream....")
       val reader = new BufferedReader(new InputStreamReader(is))
       try {
         def readLine(reader: BufferedReader, acc: StringBuffer): StringBuffer = {
@@ -110,6 +111,9 @@ package edgar.core {
       ftpClient.connect(ftpConfig.host)
       ftpClient.login(ftpConfig.username, ftpConfig.password)
       ftpClient.enterLocalPassiveMode
+      ftpClient.setFileType(BINARY_FILE_TYPE)
+      ftpClient.setRemoteVerificationEnabled(false)
+      ftpClient.setControlKeepAliveTimeout(60)
     }
 
     private def execute[T](op: FTPClient => T): T = {
@@ -151,6 +155,12 @@ package edgar.core {
         val password = _password
         val host = _host
       }
+    
+    override def readStream(is:InputStream):String = {
+      
+      IOUtils.toString(is, "UTF-8")
+    }
+    
   }
   
 }

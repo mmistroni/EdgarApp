@@ -35,42 +35,46 @@ class EdgarModuleTestSuite extends FunSuite with MockFactory with Matchers {
 
   trait MockedFtpClient {
 
-    val ftpClient = stub[FtpClient]
-
-    (ftpClient.listDirectory _).when(testDirName).returns(testListDirValues)
-
-    (ftpClient.retrieveFile _).when(testFileName).returns(testFileContent)
-
+    val ftpClient = Mockito.mock(classOf[FtpClient])
+    
+    Mockito.when(ftpClient.listDirectory(testDirName)).thenReturn(testListDirValues)
+    Mockito.when(ftpClient.retrieveFile(testFileName)).thenReturn(testFileContent)
+    
   }
 
   
    test("FtpClientWithHardCodedMock") {
-    /**
-     val ftpClient = new EdgarModuleCake with MockFtpClient {}
+    object fake extends EdgarModule with MockedFtpClient
 
-    ftpClient.listDirectory(testDirName) should be(testListDirValues)
+    val ftpClient = fake
 
-    ftpClient.retrieveFile(testFileName) should be(testFileContent)
-		**/
+    ftpClient.list(testDirName) should be(testListDirValues)
+
+    ftpClient.downloadFile(testFileName) should be(testFileContent)
+		
   }
 
   test("testFtpClientWithAbstractClient") {
 
-    val mockFtpClient = stub[FtpClient]
+    val mockFtpClient = Mockito.mock(classOf[FtpClient])
 
-    (mockFtpClient.listDirectory _).when(testDirName).returns(testListDirValues)
-
-    (mockFtpClient.retrieveFile _).when(testFileName).returns(testFileContent)
-
-    //object fake extends EdgarModule with MockedFtpClient
-
+    Mockito.when(mockFtpClient.listDirectory(testDirName)).thenReturn(testListDirValues)
+    Mockito.when(mockFtpClient.retrieveFile(testFileName)).thenReturn(testFileContent)
+    
+    
+    
     val edgarClient = new EdgarModule { val ftpClient = mockFtpClient }
 
     edgarClient.list(testDirName) should be(testListDirValues)
-
+    edgarClient.downloadFile(testFileName) should be (testFileContent)
+    
+    Mockito.verify(mockFtpClient).listDirectory(testDirName)
+    Mockito.verify(mockFtpClient).retrieveFile(testFileName)
+    
+    
   }
   
-  test(" ftpClientWithThinCakePattern") {
+  test("testFtpClientWithThinCakePattern") {
 
     object fake extends EdgarModule with MockedFtpClient
 
