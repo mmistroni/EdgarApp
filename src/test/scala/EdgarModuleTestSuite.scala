@@ -1,9 +1,9 @@
 import edgar.core._
 import org.scalatest._
-import org.scalamock.scalatest.MockFactory
 import Matchers._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+
 import org.junit._
 import scala.io._
 import scala.xml.XML
@@ -13,9 +13,11 @@ import java.io._
 import org.apache.commons.net.ftp.FTPFile
 
 import org.mockito.{ Mockito, Matchers=>MockitoMatchers}
+import akka.testkit._
+
 
 @RunWith(classOf[JUnitRunner])
-class EdgarModuleTestSuite extends FunSuite with MockFactory with Matchers {
+class EdgarModuleTestSuite extends FunSuite  with Matchers {
 
   val testListDirValues = List("listDirs")
 

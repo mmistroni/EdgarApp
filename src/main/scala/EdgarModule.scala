@@ -3,7 +3,8 @@ import scala.xml.XML
 import org.apache.commons.net.ftp.FTPClient
 import scala.io._
 import java.io._
-import org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE
+import org.apache.commons.net.ftp.FTP._
+import org.apache.commons.net.ftp.FTPReply
 import org.apache.commons.io.IOUtils
 
 package edgar.core {
@@ -18,6 +19,8 @@ package edgar.core {
       def list(dirName: String): List[String]
 
       def downloadFile(fileName: String): String
+      
+      def reconnect :Boolean = true
 
     }
 
@@ -54,6 +57,7 @@ package edgar.core {
     val ftpConfig: FtpConfig
     def listDirectory(dirName: String): List[String]
     def retrieveFile(fileName: String): String
+    
   }
 
   trait EdgarModuleCake {
@@ -66,6 +70,9 @@ package edgar.core {
       ftpClient.retrieveFile(fileName)
     }
 
+    
+    
+    
   }
 
   // Thin Cake Pattern if module is small we only define
@@ -108,12 +115,20 @@ package edgar.core {
     }
 
     private def connect() = {
+      
       ftpClient.connect(ftpConfig.host)
+      val reply = ftpClient.getReplyCode();
+      if(!FTPReply.isPositiveCompletion(reply)) {
+        disconnect();
+        println("FTP server refused connection.");
+        println(reply)
+        throw new IllegalArgumentException("FTP server refused connection." + reply)
+      }
       ftpClient.login(ftpConfig.username, ftpConfig.password)
       ftpClient.enterLocalPassiveMode
       ftpClient.setFileType(BINARY_FILE_TYPE)
       ftpClient.setRemoteVerificationEnabled(false)
-      ftpClient.setControlKeepAliveTimeout(60)
+      ftpClient.setControlKeepAliveTimeout(300)
     }
 
     private def execute[T](op: FTPClient => T): T = {
@@ -142,10 +157,22 @@ package edgar.core {
     }
 
     private def disconnect() = {
-      ftpClient.logout()
-      ftpClient.disconnect()
+      try {
+        ftpClient.logout()
+      } finally {
+        if(ftpClient.isConnected()) {
+          try {
+            ftpClient.disconnect()
+          } catch {
+            case jle:java.lang.Exception => println("Exception in disconnecting. we do nothing")
+          }
+          // do nothing
+        }
+      }
     }
 
+    
+    
   }
   
   
