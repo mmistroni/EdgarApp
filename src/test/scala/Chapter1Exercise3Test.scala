@@ -5,7 +5,7 @@
  */
 import org.junit._
 import Assert._
-import edgar.core
+import edgar.ftp
 class Chapter1Exercise3Test{
 
   @Test 

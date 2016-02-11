@@ -1,7 +1,7 @@
 
 import akka.actor._
 import akka.actor.SupervisorStrategy.{ Resume, Escalate, Restart }
-import edgar.core._
+import edgar.ftp._
 import scala.xml.XML
 import akka.event.Logging
 import scala.concurrent.duration._
@@ -15,44 +15,49 @@ package edgar.actors {
     case class DownloadFailed(fileContent: String, origin: ActorRef, downloader: ActorRef)
   }
 
-  sealed trait EdgarRequest
+  object EdgarRequests {
+  
+    sealed trait EdgarRequest
+  
+    case object Start
+  
+    case object DownloadLatestIndex extends EdgarRequest
+  
+    case class FileIndex(fileName: String) extends EdgarRequest
+  
+    case class ProcessIndexFile(fileContent: String) extends EdgarRequest
+  
+    case class DownloadFile(filePath: String)
+  
+    case class FilteredFiles(files: List[(String, String, String)])
+  
+    case class FileContent(content: String)
+  
+    case class FilingInfo(xmlContent: String)
+  
+    case object Shutdown
 
-  case object Start
-
-  case object DownloadLatestIndex extends EdgarRequest
-
-  case class FileIndex(fileName: String) extends EdgarRequest
-
-  case class ProcessIndexFile(fileContent: String) extends EdgarRequest
-
-  case class DownloadFile(filePath: String)
-
-  case class FilteredFiles(files: List[(String, String, String)])
-
-  case class FileContent(content: String)
-
-  case class FilingInfo(xmlContent: String)
-
-  case object Shutdown
-
-  class IndexRetriever(ftpClient2: FtpClient,
+  }
+  
+  class IndexRetriever(indexProcessor:ActorRef, 
+                       downloader:ActorRef,
+                       ftpClient:FtpClient,
                        indexDir: String) extends Actor {
 
-    val ftpClient = new ApacheFTPClient {
-      val ftpConfig = new FtpConfig {
-        val username = "anonymous"
-        val password = UUID.randomUUID().toString() + "@downloader.com"
-        val host = "ftp.sec.gov"
-      }
-    }
-
     val log = Logging(context.system, this)
+    
     def receive = {
 
-      case DownloadLatestIndex => {
+      case EdgarRequests.DownloadLatestIndex => {
         log.info("Retriever. retrieving latest index")
         val latestFile = ftpClient.listDirectory(indexDir).last
-        sender ! FileIndex(s"$indexDir/$latestFile")
+        log.info(s"Sending data to downloader to retireve:$latestFile")
+        downloader ! EdgarRequests.DownloadFile(s"$indexDir/$latestFile")
+      }
+
+      case EdgarRequests.FileContent(content) => {
+        log.info("Master.+call processor.")
+        indexProcessor ! EdgarRequests.ProcessIndexFile(content)
       }
 
     }
@@ -66,18 +71,17 @@ package edgar.actors {
     def processContent(content: String): List[(String, String, String)] = {
       val lines = content.split("\n").toList.map(ln => ln.split('|'))
       log.info("original file has:" + lines.size)
-      //lineArray => lineArray.size > 2 && lineArray(2) == "4"
       lines.filter(filterFunction).map(arr => (arr(0), arr(2), arr(4)))
     }
 
     def receive = {
 
-      case ProcessIndexFile(fileContent: String) => {
+      case EdgarRequests.ProcessIndexFile(fileContent: String) => {
 
         log.info("Processor.Processing")
         val arrList = processContent(fileContent)
         log.info("Sending msg with:" + arrList.size + " elements")
-        edgarFileManager ! FilteredFiles(arrList)
+        edgarFileManager ! EdgarRequests.FilteredFiles(arrList)
 
       }
 
@@ -91,7 +95,7 @@ package edgar.actors {
 
     def receive = {
 
-      case FilingInfo(fileContent: String) => {
+      case EdgarRequests.FilingInfo(fileContent: String) => {
         val xmlContent = fileContent.substring(fileContent.indexOf("<ownershipDocument>"), fileContent.indexOf("</XML"))
 
         val xml = XML.loadString(xmlContent)
@@ -113,17 +117,17 @@ package edgar.actors {
 
     def receive = {
 
-      case FilteredFiles(fileList: List[(String, String, String)]) => {
+      case EdgarRequests.FilteredFiles(fileList: List[(String, String, String)]) => {
         fileCount = fileList.size
-        fileList.foreach { case (cik: String, form: String, fileName: String) => downloader ! DownloadFile(fileName) }
+        fileList.foreach { case (cik: String, form: String, fileName: String) => downloader ! EdgarRequests.DownloadFile(fileName) }
 
       }
 
-      case FileContent(fileContent: String) =>
-        edgarFileSink ! FilingInfo(fileContent)
+      case EdgarRequests.FileContent(fileContent: String) =>
+        edgarFileSink ! EdgarRequests.FilingInfo(fileContent)
 
         fileCount -= 1
-        log.info(s"$fileCount remaining to download.....")
+        log.debug(s"$fileCount remaining to download.....")
         if (fileCount == 0) {
           log.info("sending shutdown")
           downloader ! PoisonPill
@@ -148,22 +152,12 @@ package edgar.actors {
 
     def receive = {
 
-      case Start =>
+      case EdgarRequests.Start =>
         log.info("Master.I have now to download the latest index")
         startTime = System.currentTimeMillis()
-        retriever ! DownloadLatestIndex
+        retriever ! EdgarRequests.DownloadLatestIndex
 
-      case FileIndex(fileName) =>
-
-        log.info("Master.received :" + fileName)
-        log.info("Sending message to Downloader now...")
-        downloader ! DownloadFile(fileName)
-
-      case FileContent(content) =>
-
-        log.info("Master.+call processor.")
-        indexProcessor ! ProcessIndexFile(content)
-
+      
       case Terminated(downoader) =>
         endTime = System.currentTimeMillis()
         log.info("Master shutting down")
@@ -181,14 +175,7 @@ package edgar.actors {
 
     import DownloadManager._
     val log = Logging(context.system, this)
-    val ftpClient2: FtpClient = new ApacheFTPClient {
-      val ftpConfig = new FtpConfig {
-        val username = "anonymous"
-        val password = s"${self.path.name}@gmail.com"
-        val host = "ftp.sec.gov"
-      }
-    }
-
+    
     override def preStart(): Unit = {
       log.info("Starting downloader again")
     }
@@ -227,52 +214,58 @@ package edgar.actors {
           case jns: java.lang.Exception =>
             val originalMessage = workItems.get(sender).get
             log.info(s"Error while Downloading ${originalMessage}: $jns")
+            log.info(s"$sender")
             workItems.remove(sender)
             // creating new sender
+            log.info(s"before restart we have ${downloaders.size}")
             log.info("Sender Removed")
             downloaders.enqueue(sender)
             log.info("Enqueuing Sender")
+            log.info(s"after enqueuing  we have ${downloaders.size}")
+            
             pendingWork.enqueue(originalMessage)
             Restart // something went wrong. restarting actors
           case _ =>
             Escalate
         }
 
-    override def preStart(): Unit = {
-      for (i <- 0 until downloadSlots) {
-        val ftpClient = new ApacheFTPClient {
+    private def createActor(actorId:String) = {
+      val ftpClient = new ApacheFTPClient {
           val ftpConfig = new FtpConfig {
             val username = "anonymous"
-            val password = s"$i" + UUID.randomUUID().toString() + "@gmail.com"
+            val password = s"$actorId" + UUID.randomUUID().toString() + "@gmail.com"
             val host = "ftp.sec.gov"
           }
         }
-
-        val dl = context.actorOf(Props(classOf[ChildDownloader], ftpClient), s"dl$i")
+        context.actorOf(Props(classOf[ChildDownloader], ftpClient), actorId)
+    }
+    
+    override def preStart(): Unit = {
+      for (i <- 0 until downloadSlots) {
+        
+        val dl = createActor(s"dl$i")
         downloaders.enqueue(dl)
       }
       log.info("Initialization finished.downloder queue size:" + downloaders.size)
     }
 
     private def checkDownloads(): Unit = {
-      //log.info(s"Checking downloads.workQueue:${pendingWork.size}|worker queue:${downloaders.size}....")
+      log.debug(s"Checking downloads.workQueue:${pendingWork.size}|worker queue:${downloaders.size}....")
       if (pendingWork.nonEmpty && downloaders.nonEmpty) {
         try {
           val dl = downloaders.dequeue()
           val item = pendingWork.dequeue()
           log.info(
-            s"$item starts, ${downloaders.size} download slots left")
+            s"$item starts, -- ${downloaders.size} ${downloaders} download slots left")
           dl ! item
           workItems(dl) = item
         } catch {
           case ioe: java.lang.Exception => log.info("Exception in checkDownoad. should remove msg")
         }
-      } else {
-        log.info(s"Downloaders:${downloaders.size}, PendingWork:${pendingWork.size}")
-      }
+      } 
     }
     def receive = {
-      case DownloadFile(filePath) =>
+      case EdgarRequests.DownloadFile(filePath) =>
         try {
           pendingWork.enqueue(Download(filePath, sender))
           //log.info("Pending Queue size:" + pendingWork.size)
@@ -288,7 +281,7 @@ package edgar.actors {
         checkDownloads()
 
       case Finished(content, origin) =>
-        origin ! FileContent(content)
+        origin ! EdgarRequests.FileContent(content)
         workItems.remove(sender)
         downloaders.enqueue(sender)
         log.debug(

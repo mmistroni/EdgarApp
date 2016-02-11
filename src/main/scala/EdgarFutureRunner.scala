@@ -9,7 +9,7 @@ import scala.util.{ Success, Failure }
 import scala.io._
 import scala.xml.XML
 
-import edgar.core._
+import edgar.ftp._
 object FutureEdgarRunner extends App {
   println("Kicking off EdgarModule")
 

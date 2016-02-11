@@ -8,44 +8,34 @@ import org.apache.commons.net.ftp.FTPReply
 import org.apache.commons.io.IOUtils
 
 package edgar.core {
-
-  /** Below are components of the Cake pattern **/
-  trait FtpClientComponent {
-    def ftpClient: FTPClient // this is what we mock. But we cannot use it for real
-    trait FTPClient {
-
-      def connect(host: String): Unit
-
-      def list(dirName: String): List[String]
-
-      def downloadFile(fileName: String): String
-      
-      def reconnect :Boolean = true
-
-    }
-
+  
+  case class EdgarFiling(val cik:String, val asOfDate:String,
+                            val formType:String, val companyName:String, val filingPath:String) 
+  
+  object EdgarPredicates {
+    
+    def cikEquals(value:String)(filing:EdgarFiling) = filing.cik  == value
+    
+    def formTypeEquals(value:String)(filing:EdgarFiling) = filing.formType == value
+    
+    def companyNameEquals(value:String)(filing:EdgarFiling) = filing.companyName == value
+    
+    def formTypeIn(formTypes : List[String])(filing:EdgarFiling) = formTypes.contains(filing.formType)
+    
+    def cikIn(ciks:List[String])(filing:EdgarFiling) = ciks.contains(filing.cik)
+    
+    def and(predicates:Seq[EdgarFiling => Boolean])(filing:EdgarFiling) = predicates.forall(predicate => predicate(filing))
+    
+    def or(predicates:Seq[EdgarFiling => Boolean])(filing:EdgarFiling) = predicates.exists(predicate => predicate(filing))
+     
+  
   }
 
-  trait EdgarDownloader {
-    ftpClientComponent: FtpClientComponent =>
-    def getIndexFileContent(dirName: String): List[String] = {
-      ftpClientComponent.ftpClient.list(dirName)
-    }
 
-    def retrieveFilingFile(fileName: String): String = {
-      ftpClientComponent.ftpClient.downloadFile(fileName)
-    }
+}
+  
 
-  }
-
-  trait FtpClientComponentImpl extends FtpClientComponent {
-    def ftpClient = new FTPClientImpl
-    class FTPClientImpl extends FTPClient {
-      def connect(host: String) = {}
-      def list(dirName: String): List[String] = null
-      def downloadFile(fileName: String): String = null
-    }
-  }
+package edgar.ftp {
 
   trait FtpConfig {
     val host: String
@@ -59,25 +49,6 @@ package edgar.core {
     def retrieveFile(fileName: String): String
     
   }
-
-  trait EdgarModuleCake {
-    ftpClient: FtpClient =>
-    def list(dirName: String): List[String] = {
-      ftpClient.listDirectory(dirName)
-    }
-
-    def downloadFile(fileName: String): String = {
-      ftpClient.retrieveFile(fileName)
-    }
-
-    
-    
-    
-  }
-
-  // Thin Cake Pattern if module is small we only define
-
-  // an abstract method
 
   trait EdgarModule {
     val ftpClient: FtpClient

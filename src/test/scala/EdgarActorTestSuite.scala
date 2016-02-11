@@ -3,16 +3,17 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.junit._
 
-
 import Assert._
 import edgar.actors._
-import edgar.core._
+import edgar.actors.EdgarRequests._
+import edgar.actors.DownloadManager._
+import edgar.ftp._
 import edgar.actors.DownloadManager._
 import akka.actor.ActorSystem
 import akka.actor.{ ActorRef, Props, Terminated }
 import akka.actor.Actor
 import akka.actor.Props
-import akka.testkit.{ TestKit, TestActorRef, ImplicitSender, TestProbe}
+import akka.testkit.{ TestKit, TestActorRef, ImplicitSender, TestProbe }
 import scala.concurrent.duration._
 import scala.concurrent.Await
 import akka.pattern.ask
@@ -21,6 +22,13 @@ import org.mockito._
 import org.mockito.Mockito._
 
 class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with ImplicitSender {
+  
+  def createMockFtpClient(testFileName:String, testFileContent:String) = {
+    val mockFtpClient = Mockito.mock(classOf[FtpClient])
+    when(mockFtpClient.retrieveFile(testFileName)).thenReturn(testFileContent)
+    mockFtpClient
+  }
+  
 
   @Test @Ignore
   def testDownloaderSynchronously() {
@@ -36,7 +44,7 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
   }
   /** val retriever = TestActorRef(Props(classOf[IndexRetriever], downloader)) val sink = TestActorRef[EdgarFileSink] val sink2 = system.actorOf(Props[EdgarFileSink]) val fileManager = TestActorRef(Props(classOf[EdgarFileManager], downloader, sink)) val processor = TestActorRef(Props(classOf[IndexProcessor], fileManager)) val master = TestActorRef(Props(classOf[EdgarMaster], retriever, processor, fileManager)) **/
 
-  @Test @Ignore 
+  @Test @Ignore
   def testDownloaderAsync() {
 
     val downloader = TestActorRef[ChildDownloader]
@@ -69,36 +77,77 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
     }
 
   }
-  
+
   @Test def testChildDownloadersFileSink() {
     val testFilePath = "/test/filePath"
     val testFileContent = "testFileContent"
-    val mockFtpClient = Mockito.mock(classOf[FtpClient])
-    when(mockFtpClient.retrieveFile(testFilePath)).thenReturn(testFileContent)
+    val mockFtpClient = createMockFtpClient(testFilePath, testFileContent)
     
-    
-    
-    val mockSender  = TestActorRef(new Actor {
+    val mockSender = TestActorRef(new Actor {
       def receive = {
-        case _ => Finished("foo", null) 
+        case _ => Finished("foo", null)
       }
     })
-    val childDownloader = TestActorRef(Props(classOf[ChildDownloader]))
+    val childDownloader = TestActorRef(Props(classOf[ChildDownloader], mockFtpClient))
     within(2000 millis) {
       childDownloader ! Download(testFilePath, mockSender)
       expectMsg(Finished(testFileContent, mockSender))
     }
 
   }
+
+  
+  @Test @Ignore def testIndexRetrieverWithProbe() {
+    val indexFile = "testIndexFile"
+    val baseDir = "edgar-daily"
+    val testFilePath = s"$baseDir/$indexFile"
+    val testFileContent = "|CIX23|20911|4|COMPANY DATA|EDGAR/data/files"
+    val mockFtpClient = createMockFtpClient(testFilePath, indexFile)
+    when(mockFtpClient.listDirectory(baseDir)).thenReturn(List(indexFile))
+    
+    val expectedFinalMsg = FileContent(testFileContent)
+    val downloaderProbe = TestProbe() 
+    val indexProcessor = TestProbe()
+                
+    val retriever = TestActorRef(Props(classOf[IndexRetriever], 
+                                  indexProcessor.ref,
+                                  downloaderProbe.ref,
+                                  mockFtpClient,
+                                  baseDir))
+
+    within(1000 millis) {
+      retriever ! DownloadLatestIndex
+      downloaderProbe.expectMsg(1000 millis, DownloadFile(testFilePath))
+      downloaderProbe.reply(expectedFinalMsg)
+      indexProcessor.expectMsg(1000 millis, ProcessIndexFile(testFileContent))
+    }
+
+  }
+
+  @Test def testIndexProcessorWithProbe() {
+    val testFileContent = "CIX23|20911|4|COMPANY DATA|EDGAR/data/files"
+    val inputMessage = ProcessIndexFile(testFileContent)
+    val edgarFileManager = TestProbe() 
+    
+    val fileLines = testFileContent.split('|')
+    val filteredFiles = List(fileLines).map(arr => (arr(0), arr(2), arr(4)))
+    
+    val expectedFMgrMessage = FilteredFiles(filteredFiles)
+    val indexProcessor = TestActorRef(Props(classOf[IndexProcessor], 
+                                  edgarFileManager.ref))
+    within(1000 millis) {
+      indexProcessor ! inputMessage
+      edgarFileManager.expectMsg(1000 millis, FilteredFiles(filteredFiles))
+    }
+
+  }
+  
   
   // TODO
   /**
    * Test following actors
-   * IndexProcessor
    * DownloadManager
-   * IndexRetriever
    * EdgarManager
    */
-  
 
 }

@@ -1,4 +1,4 @@
-import edgar.core._
+import edgar.ftp._
 import org.scalatest._
 import Matchers._
 import org.junit.runner.RunWith
