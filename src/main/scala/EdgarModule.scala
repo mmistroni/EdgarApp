@@ -8,32 +8,46 @@ import org.apache.commons.net.ftp.FTPReply
 import org.apache.commons.io.IOUtils
 
 package edgar.core {
-  
-  case class EdgarFiling(val cik:String, val asOfDate:String,
-                            val formType:String, val companyName:String, val filingPath:String) 
-  
+
+  case class EdgarFiling(val cik: String, val asOfDate: String,
+                         val formType: String, val companyName: String, val filingPath: String)
+
   object EdgarPredicates {
-    
-    def cikEquals(value:String)(filing:EdgarFiling) = filing.cik  == value
-    
-    def formTypeEquals(value:String)(filing:EdgarFiling) = filing.formType == value
-    
-    def companyNameEquals(value:String)(filing:EdgarFiling) = filing.companyName == value
-    
-    def formTypeIn(formTypes : List[String])(filing:EdgarFiling) = formTypes.contains(filing.formType)
-    
-    def cikIn(ciks:List[String])(filing:EdgarFiling) = ciks.contains(filing.cik)
-    
-    def and(predicates:Seq[EdgarFiling => Boolean])(filing:EdgarFiling) = predicates.forall(predicate => predicate(filing))
-    
-    def or(predicates:Seq[EdgarFiling => Boolean])(filing:EdgarFiling) = predicates.exists(predicate => predicate(filing))
-     
-  
+
+    def cikEquals(value: String)(filing: EdgarFiling) = filing.cik == value
+
+    def formTypeEquals(value: String)(filing: EdgarFiling) = filing.formType == value
+
+    def companyNameEquals(value: String)(filing: EdgarFiling) = filing.companyName == value
+
+    def formTypeIn(formTypes: List[String])(filing: EdgarFiling) = formTypes.contains(filing.formType)
+
+    def cikIn(ciks: List[String])(filing: EdgarFiling) = ciks.contains(filing.cik)
+
+    def and(predicates: Seq[EdgarFiling => Boolean])(filing: EdgarFiling) = predicates.forall(predicate => predicate(filing))
+
+    def or(predicates: Seq[EdgarFiling => Boolean])(filing: EdgarFiling) = predicates.exists(predicate => predicate(filing))
+
   }
 
+  trait IndexProcessor {
+
+    def processIndexFile(fileContent: String): Seq[(String, String, String)]
+  }
+
+  class IndexProcessorImpl(filterFunction: Array[String] => Boolean) extends IndexProcessor {
+
+    def processIndexFile(content: String): Seq[(String, String, String)] = {
+      val lines = content.split("\n").toList.map(ln => ln.split('|'))
+      println("original file has:" + lines.size)
+      val res = lines.filter(filterFunction).map(arr => (arr(0), arr(2), arr(4)))
+      println(s"After filtering we got:${res.size}")
+      res
+    }
+
+  }
 
 }
-  
 
 package edgar.ftp {
 
@@ -47,7 +61,7 @@ package edgar.ftp {
     val ftpConfig: FtpConfig
     def listDirectory(dirName: String): List[String]
     def retrieveFile(fileName: String): String
-    
+
   }
 
   trait EdgarModule {
@@ -86,15 +100,8 @@ package edgar.ftp {
     }
 
     private def connect() = {
-      
+
       ftpClient.connect(ftpConfig.host)
-      val reply = ftpClient.getReplyCode();
-      if(!FTPReply.isPositiveCompletion(reply)) {
-        disconnect();
-        println("FTP server refused connection.");
-        println(reply)
-        throw new IllegalArgumentException("FTP server refused connection." + reply)
-      }
       ftpClient.login(ftpConfig.username, ftpConfig.password)
       ftpClient.enterLocalPassiveMode
       ftpClient.setFileType(BINARY_FILE_TYPE)
@@ -131,36 +138,32 @@ package edgar.ftp {
       try {
         ftpClient.logout()
       } finally {
-        if(ftpClient.isConnected()) {
-          try {
-            ftpClient.disconnect()
-          } catch {
-            case jle:java.lang.Exception => println("Exception in disconnecting. we do nothing")
-          }
-          // do nothing
+        try {
+          ftpClient.disconnect()
+        } catch {
+          case jle: java.lang.Exception => println("Exception in disconnecting. we do nothing")
         }
+        // do nothing
+
       }
     }
 
-    
-    
   }
-  
-  
-  class ApacheFTPClientImpl(_username:String, _password:String, _host:String) extends ApacheFTPClient {
+
+  class ApacheFTPClientImpl(_username: String, _password: String, _host: String) extends ApacheFTPClient {
     val ftpConfig = new FtpConfig {
-        val username = _username
-        val password = _password
-        val host = _host
-      }
-    
-    override def readStream(is:InputStream):String = {
-      
+      val username = _username
+      val password = _password
+      val host = _host
+    }
+
+    override def readStream(is: InputStream): String = {
+
       IOUtils.toString(is, "UTF-8")
     }
-    
+
   }
-  
+
 }
   
   

@@ -3,7 +3,7 @@ import org.scalatest._
 import Matchers._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-
+import edgar.core._
 import org.junit._
 import scala.io._
 import scala.xml.XML
@@ -11,6 +11,7 @@ import org.apache.commons.net.ftp.FTPClient
 import scala.io._
 import java.io._
 import org.apache.commons.net.ftp.FTPFile
+import Assert._
 
 import org.mockito.{ Mockito, Matchers=>MockitoMatchers}
 import akka.testkit._
@@ -44,7 +45,6 @@ class EdgarModuleTestSuite extends FunSuite  with Matchers {
     
   }
 
-  
    test("FtpClientWithHardCodedMock") {
     object fake extends EdgarModule with MockedFtpClient
 
@@ -86,7 +86,6 @@ class EdgarModuleTestSuite extends FunSuite  with Matchers {
 
   }
   
-  
   class MockApacheFtpClient extends FTPClient {
       
       override def connect(host:String) = {}
@@ -104,6 +103,7 @@ class EdgarModuleTestSuite extends FunSuite  with Matchers {
     Mockito.when(mockFtpClient.login(testUsername, testPassword)).thenReturn(true)
     Mockito.when(mockFtpClient.listFiles(testDir)).thenReturn(Array[FTPFile]())
     
+    
     val testApacheFtpClient= new  ApacheFTPClient {
       val ftpConfig = new FtpConfig {
         val host = testHost
@@ -116,6 +116,7 @@ class EdgarModuleTestSuite extends FunSuite  with Matchers {
     testApacheFtpClient.listDirectory(testDir) should be (empty)    
     Mockito.verify(mockFtpClient, Mockito.times(1)).connect(testHost)
     Mockito.verify(mockFtpClient, Mockito.times(1)).login(testUsername, testPassword)
+    Mockito.verify(mockFtpClient, Mockito.times(1)).setRemoteVerificationEnabled(false)
     Mockito.verify(mockFtpClient, Mockito.times(1)).enterLocalPassiveMode
     Mockito.verify(mockFtpClient, Mockito.times(1)).listFiles(testDir)
     Mockito.verify(mockFtpClient, Mockito.times(1)).logout()
@@ -160,6 +161,23 @@ class EdgarModuleTestSuite extends FunSuite  with Matchers {
     Mockito.verify(mockFtpClient, Mockito.times(1)).disconnect()
     Mockito.verify(mockInputStream, Mockito.times(1)).available()
     
+  }
+  
+  
+  test(" indexProcessorTest") {
+  
+    val filterFunction = (arr:Array[String]) => arr(2) == "4"
+    
+    val indexProcessor = new IndexProcessorImpl(filterFunction)
+    
+    val testString1 = "12345|TEST COMPANY|4|20123010|/edgar/xcjxzl\n"
+    val testString2 = "12345|TEST COMPANY|3|20123010|/edgar/xcjxzl\n"
+    
+    val res = indexProcessor.processIndexFile(testString1)
+    assertEquals(1, res.size)
+    val res2 = indexProcessor.processIndexFile(testString2)
+    println(res2)
+    assertTrue(res2.isEmpty)  
   }
   
   

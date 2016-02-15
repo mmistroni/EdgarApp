@@ -2,6 +2,7 @@
 import akka.actor._
 import akka.actor.SupervisorStrategy.{ Resume, Escalate, Restart }
 import edgar.ftp._
+import edgar.core._
 import scala.xml.XML
 import akka.event.Logging
 import scala.concurrent.duration._
@@ -39,7 +40,7 @@ package edgar.actors {
 
   }
   
-  class IndexRetriever(indexProcessor:ActorRef, 
+  class IndexRetrieverActor(indexProcessor:ActorRef, 
                        downloader:ActorRef,
                        ftpClient:FtpClient,
                        indexDir: String) extends Actor {
@@ -64,24 +65,18 @@ package edgar.actors {
 
   }
 
-  class IndexProcessor(edgarFileManager: ActorRef) extends Actor {
-    val filterFunction = (lineArray: Array[String]) => lineArray.size > 2 && lineArray(2) == "4"
+  class IndexProcessorActor(indexProcessor:IndexProcessor,edgarFileManager: ActorRef) extends Actor {
+    
     val log = Logging(context.system, this)
-
-    def processContent(content: String): List[(String, String, String)] = {
-      val lines = content.split("\n").toList.map(ln => ln.split('|'))
-      log.info("original file has:" + lines.size)
-      lines.filter(filterFunction).map(arr => (arr(0), arr(2), arr(4)))
-    }
 
     def receive = {
 
       case EdgarRequests.ProcessIndexFile(fileContent: String) => {
 
         log.info("Processor.Processing")
-        val arrList = processContent(fileContent)
+        val arrList = indexProcessor.processIndexFile(fileContent) //processContent(fileContent)
         log.info("Sending msg with:" + arrList.size + " elements")
-        edgarFileManager ! EdgarRequests.FilteredFiles(arrList)
+        edgarFileManager ! EdgarRequests.FilteredFiles(arrList.toList)
 
       }
 
@@ -103,7 +98,7 @@ package edgar.actors {
         val issuerName = xml \\ "issuerName"
         val issuerCik = xml \\ "issuerCik"
         val reportingOwnerCik = xml \\ "rptOwnerCik"
-        log.debug(s"FileSink.$issuerName|$issuerCik|$reportingOwnerCik")
+        log.info(s"FileSink.$issuerName|$issuerCik|$reportingOwnerCik")
       }
 
     }

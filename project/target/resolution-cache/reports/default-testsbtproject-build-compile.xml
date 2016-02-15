@@ -9,64 +9,63 @@
 		extra-sbtVersion="0.13"
 		conf="compile"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
-		date="20151029231156"/>
+		date="20160215222243"/>
 	<dependencies>
 		<module organisation="org.scala-lang" name="scala-library">
-			<revision name="2.10.4" status="release" pubdate="20140318214629" resolver="public" artresolver="public" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.10.4/" downloaded="true" searched="true" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="3">
-				<license name="BSD-like" url="http://www.scala-lang.org/downloads/license.html
-         "/>
-				<metadata-artifact status="successful" details="" size="2044" time="94" location="C:\Users\marco\.ivy2\cache\org.scala-lang\scala-library\ivy-2.10.4.xml" searched="true" original-local-location="C:\Users\marco\.ivy2\cache\org.scala-lang\scala-library\ivy-2.10.4.xml.original" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.10.4/scala-library-2.10.4.pom"/>
+			<revision name="2.10.4" status="release" pubdate="20140318214629" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.10.4/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="3">
+				<license name="BSD-like" url="http://www.scala-lang.org/downloads/license.html          "/>
+				<metadata-artifact status="no" details="" size="2701" time="0" location="C:\Users\marco\.ivy2\cache\org.scala-lang\scala-library\ivy-2.10.4.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.10.4/scala-library-2.10.4.pom"/>
 				<caller organisation="org.scalaz" name="scalaz-effect_2.10" conf="default, compile, runtime, master" rev="2.10.4" rev-constraint-default="2.10.4" rev-constraint-dynamic="2.10.1" callerrev="7.0.2"/>
 				<caller organisation="org.scalaz" name="scalaz-core_2.10" conf="default, compile, runtime, master" rev="2.10.4" rev-constraint-default="2.10.4" rev-constraint-dynamic="2.10.1" callerrev="7.0.2"/>
 				<artifacts>
-					<artifact name="scala-library" type="jar" ext="jar" status="successful" details="" size="7126372" time="4781" location="C:\Users\marco\.ivy2\cache\org.scala-lang\scala-library\jars\scala-library-2.10.4.jar">
+					<artifact name="scala-library" type="jar" ext="jar" status="no" details="" size="7126372" time="0" location="C:\Users\marco\.ivy2\cache\org.scala-lang\scala-library\jars\scala-library-2.10.4.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.10.4/scala-library-2.10.4.jar"/>
 					</artifact>
 				</artifacts>
 			</revision>
 		</module>
 		<module organisation="com.typesafe.sbteclipse" name="sbteclipse-plugin">
-			<revision name="2.5.0" status="release" pubdate="20140430121620" resolver="typesafe-ivy-releases" artresolver="typesafe-ivy-releases" extra-scalaVersion="2.10" extra-sbtVersion="0.13" downloaded="true" searched="true" default="false" conf="compile, default(compile)" position="0">
-				<metadata-artifact status="successful" details="" size="1434" time="1500" location="C:\Users\marco\.ivy2\cache\scala_2.10\sbt_0.13\com.typesafe.sbteclipse\sbteclipse-plugin\ivy-2.5.0.xml" searched="true" original-local-location="C:\Users\marco\.ivy2\cache\scala_2.10\sbt_0.13\com.typesafe.sbteclipse\sbteclipse-plugin\ivy-2.5.0.xml.original" origin-is-local="false" origin-location="https://repo.typesafe.com/typesafe/ivy-releases/com.typesafe.sbteclipse/sbteclipse-plugin/scala_2.10/sbt_0.13/2.5.0/ivys/ivy.xml"/>
+			<revision name="2.5.0" status="release" pubdate="20140430121620" resolver="sbt-chain" artresolver="sbt-chain" extra-scalaVersion="2.10" extra-sbtVersion="0.13" downloaded="false" searched="false" default="false" conf="compile, default(compile)" position="0">
+				<metadata-artifact status="no" details="" size="1436" time="0" location="C:\Users\marco\.ivy2\cache\scala_2.10\sbt_0.13\com.typesafe.sbteclipse\sbteclipse-plugin\ivy-2.5.0.xml" searched="false" origin-is-local="false" origin-location="https://repo.typesafe.com/typesafe/ivy-releases/com.typesafe.sbteclipse/sbteclipse-plugin/scala_2.10/sbt_0.13/2.5.0/ivys/ivy.xml"/>
 				<caller organisation="default" name="testsbtproject-build" conf="compile" rev="2.5.0" rev-constraint-default="2.5.0" rev-constraint-dynamic="2.5.0" callerrev="0.1-SNAPSHOT" extra-scalaVersion="2.10" extra-sbtVersion="0.13"/>
 				<artifacts>
-					<artifact name="sbteclipse-plugin" type="jar" ext="jar" status="successful" details="" size="8778" time="1721" location="C:\Users\marco\.ivy2\cache\scala_2.10\sbt_0.13\com.typesafe.sbteclipse\sbteclipse-plugin\jars\sbteclipse-plugin-2.5.0.jar">
+					<artifact name="sbteclipse-plugin" type="jar" ext="jar" status="no" details="" size="8778" time="0" location="C:\Users\marco\.ivy2\cache\scala_2.10\sbt_0.13\com.typesafe.sbteclipse\sbteclipse-plugin\jars\sbteclipse-plugin-2.5.0.jar">
 						<origin-location is-local="false" location="https://repo.typesafe.com/typesafe/ivy-releases/com.typesafe.sbteclipse/sbteclipse-plugin/scala_2.10/sbt_0.13/2.5.0/jars/sbteclipse-plugin.jar"/>
 					</artifact>
 				</artifacts>
 			</revision>
 		</module>
 		<module organisation="com.typesafe.sbteclipse" name="sbteclipse-core">
-			<revision name="2.5.0" status="release" pubdate="20140430121620" resolver="typesafe-ivy-releases" artresolver="typesafe-ivy-releases" extra-scalaVersion="2.10" extra-sbtVersion="0.13" downloaded="true" searched="true" default="false" conf="compile, default(compile)" position="1">
-				<metadata-artifact status="successful" details="" size="1478" time="2328" location="C:\Users\marco\.ivy2\cache\scala_2.10\sbt_0.13\com.typesafe.sbteclipse\sbteclipse-core\ivy-2.5.0.xml" searched="true" original-local-location="C:\Users\marco\.ivy2\cache\scala_2.10\sbt_0.13\com.typesafe.sbteclipse\sbteclipse-core\ivy-2.5.0.xml.original" origin-is-local="false" origin-location="https://repo.typesafe.com/typesafe/ivy-releases/com.typesafe.sbteclipse/sbteclipse-core/scala_2.10/sbt_0.13/2.5.0/ivys/ivy.xml"/>
+			<revision name="2.5.0" status="release" pubdate="20140430121620" resolver="sbt-chain" artresolver="sbt-chain" extra-scalaVersion="2.10" extra-sbtVersion="0.13" downloaded="false" searched="false" default="false" conf="compile, default(compile)" position="1">
+				<metadata-artifact status="no" details="" size="1480" time="0" location="C:\Users\marco\.ivy2\cache\scala_2.10\sbt_0.13\com.typesafe.sbteclipse\sbteclipse-core\ivy-2.5.0.xml" searched="false" origin-is-local="false" origin-location="https://repo.typesafe.com/typesafe/ivy-releases/com.typesafe.sbteclipse/sbteclipse-core/scala_2.10/sbt_0.13/2.5.0/ivys/ivy.xml"/>
 				<caller organisation="com.typesafe.sbteclipse" name="sbteclipse-plugin" conf="compile" rev="2.5.0" rev-constraint-default="2.5.0" rev-constraint-dynamic="2.5.0" callerrev="2.5.0" extra-scalaVersion="2.10" extra-sbtVersion="0.13"/>
 				<artifacts>
-					<artifact name="sbteclipse-core" type="jar" ext="jar" status="successful" details="" size="327452" time="3750" location="C:\Users\marco\.ivy2\cache\scala_2.10\sbt_0.13\com.typesafe.sbteclipse\sbteclipse-core\jars\sbteclipse-core-2.5.0.jar">
+					<artifact name="sbteclipse-core" type="jar" ext="jar" status="no" details="" size="327452" time="0" location="C:\Users\marco\.ivy2\cache\scala_2.10\sbt_0.13\com.typesafe.sbteclipse\sbteclipse-core\jars\sbteclipse-core-2.5.0.jar">
 						<origin-location is-local="false" location="https://repo.typesafe.com/typesafe/ivy-releases/com.typesafe.sbteclipse/sbteclipse-core/scala_2.10/sbt_0.13/2.5.0/jars/sbteclipse-core.jar"/>
 					</artifact>
 				</artifacts>
 			</revision>
 		</module>
 		<module organisation="org.scalaz" name="scalaz-effect_2.10">
-			<revision name="7.0.2" status="release" pubdate="20130707133131" resolver="public" artresolver="public" homepage="http://scalaz.org" downloaded="true" searched="true" default="false" conf="default, compile, runtime, default(compile), master" position="4">
+			<revision name="7.0.2" status="release" pubdate="20130707133131" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://scalaz.org" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="4">
 				<license name="BSD-style" url="http://www.opensource.org/licenses/bsd-license.php"/>
-				<metadata-artifact status="successful" details="" size="3018" time="219" location="C:\Users\marco\.ivy2\cache\org.scalaz\scalaz-effect_2.10\ivy-7.0.2.xml" searched="true" original-local-location="C:\Users\marco\.ivy2\cache\org.scalaz\scalaz-effect_2.10\ivy-7.0.2.xml.original" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scalaz/scalaz-effect_2.10/7.0.2/scalaz-effect_2.10-7.0.2.pom"/>
+				<metadata-artifact status="no" details="" size="2704" time="0" location="C:\Users\marco\.ivy2\cache\org.scalaz\scalaz-effect_2.10\ivy-7.0.2.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scalaz/scalaz-effect_2.10/7.0.2/scalaz-effect_2.10-7.0.2.pom"/>
 				<caller organisation="com.typesafe.sbteclipse" name="sbteclipse-core" conf="compile" rev="7.0.2" rev-constraint-default="7.0.2" rev-constraint-dynamic="7.0.2" callerrev="2.5.0"/>
 				<artifacts>
-					<artifact name="scalaz-effect_2.10" type="bundle" ext="jar" status="successful" details="" size="429615" time="407" location="C:\Users\marco\.ivy2\cache\org.scalaz\scalaz-effect_2.10\bundles\scalaz-effect_2.10-7.0.2.jar">
+					<artifact name="scalaz-effect_2.10" type="bundle" ext="jar" status="no" details="" size="429615" time="0" location="C:\Users\marco\.ivy2\cache\org.scalaz\scalaz-effect_2.10\bundles\scalaz-effect_2.10-7.0.2.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scalaz/scalaz-effect_2.10/7.0.2/scalaz-effect_2.10-7.0.2.jar"/>
 					</artifact>
 				</artifacts>
 			</revision>
 		</module>
 		<module organisation="org.scalaz" name="scalaz-core_2.10">
-			<revision name="7.0.2" status="release" pubdate="20130707133202" resolver="public" artresolver="public" homepage="http://scalaz.org" downloaded="true" searched="true" default="false" conf="default, compile, runtime(*), master(compile), runtime, default(compile), compile(*), master" position="2">
+			<revision name="7.0.2" status="release" pubdate="20130707133202" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://scalaz.org" downloaded="false" searched="false" default="false" conf="default, compile, runtime(*), master(compile), runtime, default(compile), compile(*), master" position="2">
 				<license name="BSD-style" url="http://www.opensource.org/licenses/bsd-license.php"/>
-				<metadata-artifact status="successful" details="" size="2836" time="172" location="C:\Users\marco\.ivy2\cache\org.scalaz\scalaz-core_2.10\ivy-7.0.2.xml" searched="true" original-local-location="C:\Users\marco\.ivy2\cache\org.scalaz\scalaz-core_2.10\ivy-7.0.2.xml.original" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.10/7.0.2/scalaz-core_2.10-7.0.2.pom"/>
+				<metadata-artifact status="no" details="" size="2552" time="0" location="C:\Users\marco\.ivy2\cache\org.scalaz\scalaz-core_2.10\ivy-7.0.2.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.10/7.0.2/scalaz-core_2.10-7.0.2.pom"/>
 				<caller organisation="com.typesafe.sbteclipse" name="sbteclipse-core" conf="compile" rev="7.0.2" rev-constraint-default="7.0.2" rev-constraint-dynamic="7.0.2" callerrev="2.5.0"/>
 				<caller organisation="org.scalaz" name="scalaz-effect_2.10" conf="default, compile, runtime, master" rev="7.0.2" rev-constraint-default="7.0.2" rev-constraint-dynamic="7.0.2" callerrev="7.0.2"/>
 				<artifacts>
-					<artifact name="scalaz-core_2.10" type="bundle" ext="jar" status="successful" details="" size="8596592" time="5953" location="C:\Users\marco\.ivy2\cache\org.scalaz\scalaz-core_2.10\bundles\scalaz-core_2.10-7.0.2.jar">
+					<artifact name="scalaz-core_2.10" type="bundle" ext="jar" status="no" details="" size="8596592" time="0" location="C:\Users\marco\.ivy2\cache\org.scalaz\scalaz-core_2.10\bundles\scalaz-core_2.10-7.0.2.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scalaz/scalaz-core_2.10/7.0.2/scalaz-core_2.10-7.0.2.jar"/>
 					</artifact>
 				</artifacts>

@@ -8,6 +8,7 @@ import edgar.actors._
 import edgar.actors.EdgarRequests._
 import edgar.actors.DownloadManager._
 import edgar.ftp._
+import edgar.core._
 import edgar.actors.DownloadManager._
 import akka.actor.ActorSystem
 import akka.actor.{ ActorRef, Props, Terminated }
@@ -59,7 +60,7 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
   @Test @Ignore def testRetriever() {
 
     val downloader = TestActorRef[ChildDownloader]
-    val retriever = TestActorRef(Props(classOf[IndexRetriever], downloader))
+    val retriever = TestActorRef(Props(classOf[IndexRetrieverActor], downloader))
 
     within(1000 millis) {
       retriever ! DownloadLatestIndex
@@ -109,7 +110,7 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
     val downloaderProbe = TestProbe() 
     val indexProcessor = TestProbe()
                 
-    val retriever = TestActorRef(Props(classOf[IndexRetriever], 
+    val retriever = TestActorRef(Props(classOf[IndexRetrieverActor], 
                                   indexProcessor.ref,
                                   downloaderProbe.ref,
                                   mockFtpClient,
@@ -124,22 +125,26 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
 
   }
 
-  @Test def testIndexProcessorWithProbe() {
+  @Test def testIndexProcessorActorWithProbe() {
     val testFileContent = "CIX23|20911|4|COMPANY DATA|EDGAR/data/files"
-    val inputMessage = ProcessIndexFile(testFileContent)
-    val edgarFileManager = TestProbe() 
-    
     val fileLines = testFileContent.split('|')
     val filteredFiles = List(fileLines).map(arr => (arr(0), arr(2), arr(4)))
     
+    val mockIndexProcessor = Mockito.mock(classOf[IndexProcessor])
+    when(mockIndexProcessor.processIndexFile(testFileContent)).thenReturn(filteredFiles)
+    
+    val inputMessage = ProcessIndexFile(testFileContent)
+    val edgarFileManager = TestProbe() 
     val expectedFMgrMessage = FilteredFiles(filteredFiles)
-    val indexProcessor = TestActorRef(Props(classOf[IndexProcessor], 
+    
+    val indexProcessorActor = TestActorRef(Props(classOf[IndexProcessorActor],
+                                  mockIndexProcessor,
                                   edgarFileManager.ref))
     within(1000 millis) {
-      indexProcessor ! inputMessage
+      indexProcessorActor ! inputMessage
       edgarFileManager.expectMsg(1000 millis, FilteredFiles(filteredFiles))
     }
-
+    Mockito.verify(mockIndexProcessor).processIndexFile(testFileContent)
   }
   
   
