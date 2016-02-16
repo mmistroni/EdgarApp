@@ -128,7 +128,9 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
   @Test def testIndexProcessorActorWithProbe() {
     val testFileContent = "CIX23|20911|4|COMPANY DATA|EDGAR/data/files"
     val fileLines = testFileContent.split('|')
-    val filteredFiles = List(fileLines).map(arr => (arr(0), arr(2), arr(4)))
+    val filteredFiles = List(fileLines).map(arr => EdgarFiling(arr(0), arr(3), 
+                                                                    arr(2), arr(1),
+                                                                    arr(4)))
     
     val mockIndexProcessor = Mockito.mock(classOf[IndexProcessor])
     when(mockIndexProcessor.processIndexFile(testFileContent)).thenReturn(filteredFiles)

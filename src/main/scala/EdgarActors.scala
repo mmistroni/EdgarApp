@@ -9,6 +9,8 @@ import scala.concurrent.duration._
 import java.util.UUID
 
 package edgar.actors {
+  
+  
 
   object DownloadManager {
     case class Download(url: String, origin: ActorRef)
@@ -30,7 +32,7 @@ package edgar.actors {
   
     case class DownloadFile(filePath: String)
   
-    case class FilteredFiles(files: List[(String, String, String)])
+    case class FilteredFiles(files: Seq[EdgarFiling])
   
     case class FileContent(content: String)
   
@@ -106,24 +108,26 @@ package edgar.actors {
   }
 
   class EdgarFileManager(downloader: ActorRef, edgarFileSink: ActorRef) extends Actor {
-
+    import scala.collection.mutable.{Map=> MutableMap}
     var fileCount = 0
     val log = Logging(context.system, this)
+    var fileMap = MutableMap[String, EdgarFiling]()
 
     def receive = {
 
-      case EdgarRequests.FilteredFiles(fileList: List[(String, String, String)]) => {
-        fileCount = fileList.size
-        fileList.foreach { case (cik: String, form: String, fileName: String) => downloader ! EdgarRequests.DownloadFile(fileName) }
-
+      case EdgarRequests.FilteredFiles(fileList: Seq[EdgarFiling]) => {
+        fileMap = fileList.foldLeft(MutableMap[String, EdgarFiling]())((accumulator, item) => {
+          accumulator + (item.filingPath -> item)
+        })
+        fileList.foreach { edgarFiling:EdgarFiling => downloader ! EdgarRequests.DownloadFile(edgarFiling.filingPath) }
       }
 
       case EdgarRequests.FileContent(fileContent: String) =>
         edgarFileSink ! EdgarRequests.FilingInfo(fileContent)
 
-        fileCount -= 1
+        fileMap.remove(fileContent)
         log.debug(s"$fileCount remaining to download.....")
-        if (fileCount == 0) {
+        if (fileMap.isEmpty) {
           log.info("sending shutdown")
           downloader ! PoisonPill
 

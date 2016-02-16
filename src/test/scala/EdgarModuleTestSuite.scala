@@ -8,6 +8,7 @@ import org.junit._
 import scala.io._
 import scala.xml.XML
 import org.apache.commons.net.ftp.FTPClient
+import org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE
 import scala.io._
 import java.io._
 import org.apache.commons.net.ftp.FTPFile
@@ -119,6 +120,8 @@ class EdgarModuleTestSuite extends FunSuite  with Matchers {
     Mockito.verify(mockFtpClient, Mockito.times(1)).setRemoteVerificationEnabled(false)
     Mockito.verify(mockFtpClient, Mockito.times(1)).enterLocalPassiveMode
     Mockito.verify(mockFtpClient, Mockito.times(1)).listFiles(testDir)
+    Mockito.verify(mockFtpClient).setFileType(BINARY_FILE_TYPE)
+    Mockito.verify(mockFtpClient).setControlKeepAliveTimeout(300)
     Mockito.verify(mockFtpClient, Mockito.times(1)).logout()
     Mockito.verify(mockFtpClient, Mockito.times(1)).disconnect()
     
@@ -159,6 +162,9 @@ class EdgarModuleTestSuite extends FunSuite  with Matchers {
     Mockito.verify(mockFtpClient, Mockito.times(1)).enterLocalPassiveMode
     Mockito.verify(mockFtpClient, Mockito.times(1)).logout()
     Mockito.verify(mockFtpClient, Mockito.times(1)).disconnect()
+    Mockito.verify(mockFtpClient).setFileType(BINARY_FILE_TYPE)
+    Mockito.verify(mockFtpClient).setControlKeepAliveTimeout(300)
+    
     Mockito.verify(mockInputStream, Mockito.times(1)).available()
     
   }

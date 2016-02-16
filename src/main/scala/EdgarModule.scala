@@ -7,40 +7,49 @@ import org.apache.commons.net.ftp.FTP._
 import org.apache.commons.net.ftp.FTPReply
 import org.apache.commons.io.IOUtils
 
+  
 package edgar.core {
 
+  
+  
   case class EdgarFiling(val cik: String, val asOfDate: String,
                          val formType: String, val companyName: String, val filingPath: String)
 
+
   object EdgarPredicates {
+    
+    type EdgarFilter = EdgarFiling => Boolean
+  
 
-    def cikEquals(value: String)(filing: EdgarFiling) = filing.cik == value
+    val cikEquals: String => EdgarFilter =  cik => filing =>  filing.cik == cik
 
-    def formTypeEquals(value: String)(filing: EdgarFiling) = filing.formType == value
+    val formTypeEquals:String => EdgarFilter = formType => filing => filing.formType == formType
 
-    def companyNameEquals(value: String)(filing: EdgarFiling) = filing.companyName == value
+    val companyNameEquals:String => EdgarFilter = companyName => filing => filing.companyName == companyName
 
-    def formTypeIn(formTypes: List[String])(filing: EdgarFiling) = formTypes.contains(filing.formType)
+    def formTypeIn:Set[String] => EdgarFilter = formTypes => filing =>  formTypes.contains(filing.formType)
 
-    def cikIn(ciks: List[String])(filing: EdgarFiling) = ciks.contains(filing.cik)
+    def cikIn: Set[String] => EdgarFilter = cikList => filing => cikList.contains(filing.cik)
 
-    def and(predicates: Seq[EdgarFiling => Boolean])(filing: EdgarFiling) = predicates.forall(predicate => predicate(filing))
+    def and(predicates: Seq[EdgarFilter])(filing: EdgarFiling) = predicates.forall(predicate => predicate(filing))
 
-    def or(predicates: Seq[EdgarFiling => Boolean])(filing: EdgarFiling) = predicates.exists(predicate => predicate(filing))
+    def or(predicates: Seq[EdgarFilter])(filing: EdgarFiling) = predicates.exists(predicate => predicate(filing))
 
   }
 
   trait IndexProcessor {
 
-    def processIndexFile(fileContent: String): Seq[(String, String, String)]
+    def processIndexFile(fileContent: String): Seq[EdgarFiling]
   }
 
   class IndexProcessorImpl(filterFunction: Array[String] => Boolean) extends IndexProcessor {
 
-    def processIndexFile(content: String): Seq[(String, String, String)] = {
+    def processIndexFile(content: String): Seq[EdgarFiling] = {
       val lines = content.split("\n").toList.map(ln => ln.split('|'))
       println("original file has:" + lines.size)
-      val res = lines.filter(filterFunction).map(arr => (arr(0), arr(2), arr(4)))
+      val res = lines.filter(filterFunction).map(arr => EdgarFiling(arr(0), arr(3), 
+                                                                    arr(2), arr(1),
+                                                                    arr(4)))
       println(s"After filtering we got:${res.size}")
       res
     }
