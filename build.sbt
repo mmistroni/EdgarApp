@@ -20,4 +20,6 @@ libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test"
 libraryDependencies += "com.typesafe.akka" % "akka-actor_2.11" % "2.3.3"
 libraryDependencies += "com.typesafe.akka" % "akka-testkit_2.11" % "2.3.3" % "test"
 libraryDependencies += "org.mockito" % "mockito-core" % "1.9.5"
-//libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4-SNAPSHOT"
+libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.5",
+                            "org.slf4j" % "slf4j-simple" % "1.7.5",
+                            "org.clapper" %% "grizzled-slf4j" % "1.0.2")

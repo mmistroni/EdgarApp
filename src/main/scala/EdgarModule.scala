@@ -6,28 +6,30 @@ import java.io._
 import org.apache.commons.net.ftp.FTP._
 import org.apache.commons.net.ftp.FTPReply
 import org.apache.commons.io.IOUtils
+import grizzled.slf4j.Logger
+import java.util.zip.ZipInputStream
 
-  
 package edgar.core {
 
-  
-  
+  trait LogHelper {
+    val loggerName = this.getClass.getName
+    lazy val logger = Logger[this.type]
+  }
+
   case class EdgarFiling(val cik: String, val asOfDate: String,
                          val formType: String, val companyName: String, val filingPath: String)
 
-
   object EdgarPredicates {
-    
+
     type EdgarFilter = EdgarFiling => Boolean
-  
 
-    val cikEquals: String => EdgarFilter =  cik => filing =>  filing.cik == cik
+    val cikEquals: String => EdgarFilter = cik => filing => filing.cik == cik
 
-    val formTypeEquals:String => EdgarFilter = formType => filing => filing.formType == formType
+    val formTypeEquals: String => EdgarFilter = formType => filing => filing.formType == formType
 
-    val companyNameEquals:String => EdgarFilter = companyName => filing => filing.companyName == companyName
+    val companyNameEquals: String => EdgarFilter = companyName => filing => filing.companyName == companyName
 
-    def formTypeIn:Set[String] => EdgarFilter = formTypes => filing =>  formTypes.contains(filing.formType)
+    def formTypeIn: Set[String] => EdgarFilter = formTypes => filing => formTypes.contains(filing.formType)
 
     def cikIn: Set[String] => EdgarFilter = cikList => filing => cikList.contains(filing.cik)
 
@@ -42,18 +44,34 @@ package edgar.core {
     def processIndexFile(fileContent: String): Seq[EdgarFiling]
   }
 
-  class IndexProcessorImpl(filterFunction: Array[String] => Boolean) extends IndexProcessor {
+  class IndexProcessorImpl(filterFunction: Array[String] => Boolean) extends IndexProcessor with LogHelper {
 
     def processIndexFile(content: String): Seq[EdgarFiling] = {
       val lines = content.split("\n").toList.map(ln => ln.split('|'))
-      println("original file has:" + lines.size)
-      val res = lines.filter(filterFunction).map(arr => EdgarFiling(arr(0), arr(3), 
-                                                                    arr(2), arr(1),
-                                                                    arr(4)))
-      println(s"After filtering we got:${res.size}")
+      logger.info("original file has:" + lines.size)
+      val res = lines.filter(filterFunction).map(arr => EdgarFiling(arr(0), arr(3),
+        arr(2), arr(1),
+        arr(4)))
+      logger.info(s"After filtering we got:${res.size}")
       res
     }
 
+  }
+
+  trait EdgarSink {
+    def storeFileContent(fileContent: String)
+  }
+
+  trait OutputStreamSink extends EdgarSink with LogHelper {
+    def storeFileContent(fileContent: String) = {
+      val xmlContent = fileContent.substring(fileContent.indexOf("<ownershipDocument>"), fileContent.indexOf("</XML"))
+      val xml = XML.loadString(xmlContent)
+      val issuerName = xml \\ "issuerName"
+      val issuerCik = xml \\ "issuerCik"
+      val reportingOwnerCik = xml \\ "rptOwnerCik"
+      logger.info(s"FileSink.$issuerName|$issuerCik|$reportingOwnerCik")
+
+    }
   }
 
 }
@@ -70,7 +88,22 @@ package edgar.ftp {
     val ftpConfig: FtpConfig
     def listDirectory(dirName: String): List[String]
     def retrieveFile(fileName: String): String
+    def retrieveStream(fileName: String): InputStream
 
+  }
+
+  object FtpClient {
+
+    def createClient(_username: String, _password: String, _host: String) = {
+      new ApacheFTPClient {
+        val ftpConfig = new FtpConfig {
+          val username = _username
+          val password = _password
+          val host = _host
+        }
+      }
+
+    }
   }
 
   trait EdgarModule {
@@ -105,7 +138,6 @@ package edgar.ftp {
         reader.close()
         is.close()
       }
-
     }
 
     private def connect() = {
@@ -118,7 +150,7 @@ package edgar.ftp {
       ftpClient.setControlKeepAliveTimeout(300)
     }
 
-    private def execute[T](op: FTPClient => T): T = {
+    protected def execute[T](op: FTPClient => T): T = {
       try {
         connect()
         op(ftpClient)
@@ -130,6 +162,15 @@ package edgar.ftp {
     def listDirectory(dirName: String): List[String] = {
       execute {
         client => client.listFiles(dirName).map(file => file.getName()).filter(fileName => fileName.startsWith("master")).toList
+      }
+    }
+
+    def retrieveStream(fileName: String): InputStream = {
+      execute {
+        client =>
+          {
+            ftpClient.retrieveFileStream(fileName)
+          }
       }
     }
 
@@ -149,8 +190,9 @@ package edgar.ftp {
       } finally {
         try {
           ftpClient.disconnect()
+
         } catch {
-          case jle: java.lang.Exception => println("Exception in disconnecting. we do nothing")
+          case jle: java.lang.Exception => print("Exception in disconnecting. we do nothing")
         }
         // do nothing
 
@@ -159,7 +201,7 @@ package edgar.ftp {
 
   }
 
-  class ApacheFTPClientImpl(_username: String, _password: String, _host: String) extends ApacheFTPClient {
+  class ApacheFTPClientImpl(_username: String, _password: String, _host: String) extends ApacheFTPClient with edgar.core.LogHelper {
     val ftpConfig = new FtpConfig {
       val username = _username
       val password = _password
@@ -167,6 +209,7 @@ package edgar.ftp {
     }
 
     override def readStream(is: InputStream): String = {
+      println(is.getClass().getName());
 
       IOUtils.toString(is, "UTF-8")
     }

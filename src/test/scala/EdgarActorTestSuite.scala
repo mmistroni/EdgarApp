@@ -70,7 +70,8 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
   }
 
   @Test def testFileSink() {
-    val sink = TestActorRef[EdgarFileSink]
+    val mockEdgarSink =  Mockito.mock(classOf[EdgarSink])
+    val sink = TestActorRef(Props(classOf[EdgarFileSinkActor], mockEdgarSink))
     val testString = "<ownershipDocument></ownershipDocument></XML>"
     within(2000 millis) {
       sink ! FilingInfo(testString)

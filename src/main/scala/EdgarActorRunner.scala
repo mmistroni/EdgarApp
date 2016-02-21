@@ -9,11 +9,12 @@ import edgar.core._
 
 import java.util.UUID
 
-object EdgarActorRunner extends App {
-  
-  
 
-  println("Starting the Actor System....")
+
+object EdgarActorRunner extends App with LogHelper {
+  
+  
+  logger.info("Starting the Actor System....")
 
   val system = ActorSystem("Edgar-Filings-Downloader")
 
@@ -25,13 +26,9 @@ object EdgarActorRunner extends App {
       }
     }
 
-    
-
-  //val downloader = system.actorOf(Props(classOf[Downloader], ftpClient), "Downloader")
-  
   val downloader =
     system.actorOf(Props(classOf[DownloadManager], 3), "DownloadManager")
-  val edgarFileSink = system.actorOf(Props[EdgarFileSink], "EdgarFileSink")
+  val edgarFileSink = system.actorOf(Props(classOf[EdgarFileSinkActor], new OutputStreamSink{}), "EdgarFileSink")
   val edgarFileManager = system.actorOf(Props(classOf[EdgarFileManager],
     downloader, edgarFileSink), "EdgarFileManager")
   
