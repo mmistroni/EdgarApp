@@ -32,7 +32,7 @@ object EdgarActorRunner extends App with LogHelper {
   val edgarFileManager = system.actorOf(Props(classOf[EdgarFileManager],
     downloader, edgarFileSink), "EdgarFileManager")
   
-  val filterFunction = (lineArray: Array[String]) => lineArray.size > 2 && lineArray(2) == "4"  
+  val filterFunction = (lineArray: Array[String]) => lineArray.size > 2 && lineArray(2) == "10-K"  
   val indexProcessor = system.actorOf(Props(classOf[IndexProcessorActor],
                                       new IndexProcessorImpl(filterFunction),      
                                       edgarFileManager), "IndexProcessor")

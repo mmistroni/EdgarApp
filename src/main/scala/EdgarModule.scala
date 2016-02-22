@@ -9,11 +9,43 @@ import org.apache.commons.io.IOUtils
 import grizzled.slf4j.Logger
 import java.util.zip.ZipInputStream
 
+// TODO: define specific types for XBRL content and for normal content, to avoid having String and List(String, String)
 package edgar.core {
 
   trait LogHelper {
     val loggerName = this.getClass.getName
     lazy val logger = Logger[this.type]
+  }
+  
+  trait IndexProcessor {
+    
+    def processIndexFile(fileContent: String): Seq[EdgarFiling]
+  }
+  
+  
+  trait EdgarSink {
+    def storeFileContent(fileContent: String)
+    
+    def storeXBRLFile(fileList:List[(String, String)])
+  }
+
+  trait OutputStreamSink extends EdgarSink with LogHelper {
+    def storeFileContent(fileContent: String) = {
+      val xmlContent = fileContent.substring(fileContent.indexOf("<ownershipDocument>"), fileContent.indexOf("</XML"))
+      val xml = XML.loadString(xmlContent)
+      val issuerName = xml \\ "issuerName"
+      val issuerCik = xml \\ "issuerCik"
+      val reportingOwnerCik = xml \\ "rptOwnerCik"
+      logger.info(s"FileSink.$issuerName|$issuerCik|$reportingOwnerCik")
+
+    }
+    
+    def storeXBRLFile(fileList:List[(String, String)]) = {
+      val (first, firstContent) = fileList.head
+      logger.info(s"Content for $first is :\n$firstContent")
+    }
+    
+    
   }
 
   case class EdgarFiling(val cik: String, val asOfDate: String,
@@ -39,10 +71,7 @@ package edgar.core {
 
   }
 
-  trait IndexProcessor {
-
-    def processIndexFile(fileContent: String): Seq[EdgarFiling]
-  }
+  
 
   class IndexProcessorImpl(filterFunction: Array[String] => Boolean) extends IndexProcessor with LogHelper {
 
@@ -58,21 +87,7 @@ package edgar.core {
 
   }
 
-  trait EdgarSink {
-    def storeFileContent(fileContent: String)
-  }
-
-  trait OutputStreamSink extends EdgarSink with LogHelper {
-    def storeFileContent(fileContent: String) = {
-      val xmlContent = fileContent.substring(fileContent.indexOf("<ownershipDocument>"), fileContent.indexOf("</XML"))
-      val xml = XML.loadString(xmlContent)
-      val issuerName = xml \\ "issuerName"
-      val issuerCik = xml \\ "issuerCik"
-      val reportingOwnerCik = xml \\ "rptOwnerCik"
-      logger.info(s"FileSink.$issuerName|$issuerCik|$reportingOwnerCik")
-
-    }
-  }
+  
 
 }
 
@@ -88,8 +103,7 @@ package edgar.ftp {
     val ftpConfig: FtpConfig
     def listDirectory(dirName: String): List[String]
     def retrieveFile(fileName: String): String
-    def retrieveStream(fileName: String): InputStream
-
+    def retrieveZippedStream(fileName: String): List[(String, String)]
   }
 
   object FtpClient {
@@ -165,11 +179,40 @@ package edgar.ftp {
       }
     }
 
-    def retrieveStream(fileName: String): InputStream = {
+    def retrieveZippedStream(fileName: String): List[(String, String)] = {
       execute {
         client =>
           {
-            ftpClient.retrieveFileStream(fileName)
+
+            val xbrlStream = ftpClient.retrieveFileStream(fileName)
+            println("Extracting zippe dfile......")
+            val zis = new ZipInputStream(xbrlStream)
+
+            def copyStream(istream: InputStream, ostream: OutputStream): Unit = {
+              var bytes = new Array[Byte](1024)
+              var len = -1
+              while ({ len = istream.read(bytes, 0, 1024); len != -1 })
+                ostream.write(bytes, 0, len)
+            }
+            
+            
+            def extractString(zippedStream: ZipInputStream, accumulator: List[(String, String)]): List[(String, String)] = {
+              val entry = zippedStream.getNextEntry()
+              if (entry == null) {
+                accumulator
+              } else {
+                val currentFile = entry.getName()
+                val outstream = new ByteArrayOutputStream(1024)
+                copyStream(zippedStream, outstream)
+                extractString(zippedStream, (currentFile, outstream.toString) :: accumulator)
+              }
+
+            }
+
+            val res = extractString(zis, List[(String, String)]())
+            zis.close()
+            res
+            
           }
       }
     }
