@@ -10,18 +10,31 @@ import java.util.UUID
 import java.io.InputStream
 import org.apache.commons.io.IOUtils
 
+
+  
 package edgar.actors {
 
+
+  
+  
   object DownloadManager {
+    import EdgarTypes.{XBRLFiling, SimpleFiling}
     case class Download(url: String, origin: ActorRef)
-    case class StreamFinished(fileContents: List[(String, String)], origin: ActorRef)
-    case class Finished(fileContent: String, origin: ActorRef)
+    case class XBRLLoadFinished(fileContents: XBRLFiling, origin: ActorRef)
+    case class SimpleFilingFinished(fileContent: SimpleFiling, origin: ActorRef)
     case class DownloadFailed(fileContent: String, origin: ActorRef, downloader: ActorRef)
   }
 
   object EdgarRequests {
 
+    import EdgarTypes.{SimpleFiling, XBRLFiling}
+  
+    type SimpleFiling = String
+  
+      
     sealed trait EdgarRequest
+    
+    sealed trait EdgarResponse
 
     case object Start
 
@@ -31,22 +44,34 @@ package edgar.actors {
 
     case class ProcessIndexFile(fileContent: String) extends EdgarRequest
 
-    case class DownloadFile(filePath: String)
+    case class DownloadFile(filePath: String) extends EdgarRequest
 
-    case class DownloadXBRLFile(filePath: String)
+    case class DownloadXBRLFile(filePath: String) extends EdgarRequest
 
-    case class FilteredFiles(files: Seq[EdgarFiling])
+    case class FilteredFiles(files: Seq[EdgarFiling]) extends EdgarRequest
 
-    case class FileContent(content: String)
+    case class FileContent(content: String) extends EdgarResponse
 
-    case class StreamContent(xbrl: List[(String, String)])
+    case class StreamContent(xbrl: XBRLFiling) extends EdgarResponse
 
-    case class FilingInfo(xmlContent: String)
+    case class FilingInfo(xmlContent: SimpleFiling) extends EdgarResponse
     
-    case class FilingXBRLInfo(contentList: List[(String, String)])
+    case class FilingXBRLInfo(contentList: XBRLFiling) extends EdgarResponse
 
     case object Shutdown
 
+    def createEdgarFilingMessage(filing:EdgarFiling):EdgarRequest = filing.formType match {
+      case xbrl if List("10-K", "20-F", "40-F", "10-Q", "8-K", "6-K").contains(xbrl) => {
+        val filePath = filing.filingPath;
+        val adjustedPath = filePath.substring(0, filePath.indexOf(".")).replace("-", "")
+        val fileName = filePath.split("/").last.replace(".txt", "-xbrl.zip")
+        val fullPath = s"$adjustedPath/$fileName"
+        DownloadFile(fullPath)
+      }
+      case _ => DownloadFile(filing.filingPath)
+    }
+    
+    
   }
 
   class IndexRetrieverActor(indexProcessor: ActorRef,
@@ -57,20 +82,16 @@ package edgar.actors {
     val log = Logging(context.system, this)
 
     def receive = {
-
       case EdgarRequests.DownloadLatestIndex => {
         val latestFile = ftpClient.listDirectory(indexDir).last
         log.debug(s"Sending data to downloader to retireve:$latestFile")
         downloader ! EdgarRequests.DownloadFile(s"$indexDir/$latestFile")
       }
-
       case EdgarRequests.FileContent(content) => {
         log.info("Master.+call processor.")
         indexProcessor ! EdgarRequests.ProcessIndexFile(content)
       }
-      
       case message => log.info("Unhandled" + message);
-      
 
     }
 
@@ -117,16 +138,7 @@ package edgar.actors {
     val log = Logging(context.system, this)
     var count = 0 
 
-    private def createMessage(filing: EdgarFiling) = filing.formType match {
-      case xbrl if List("10-K", "20-F", "40-F", "10-Q", "8-K", "6-K").contains(xbrl) => {
-        val filePath = filing.filingPath;
-        val adjustedPath = filePath.substring(0, filePath.indexOf(".")).replace("-", "")
-        val fileName = filePath.split("/").last.replace(".txt", "-xbrl.zip")
-        val fullPath = s"$adjustedPath/$fileName"
-        DownloadFile(fullPath)
-      }
-      case _ => DownloadFile(filing.filingPath)
-    }
+    private def createMessage(filing: EdgarFiling) = EdgarRequests.createEdgarFilingMessage(filing)
 
     def receive = {
 
@@ -216,10 +228,10 @@ package edgar.actors {
           log.info("Extracting XBRL ifle....")
           val content = ftpClient.retrieveZippedStream(filePath)
           
-          sender !StreamFinished(content, origin)
+          sender !XBRLLoadFinished(content, origin)
         } else {
             val fileContent = ftpClient.retrieveFile(filePath)
-            sender ! Finished(fileContent, origin)
+            sender ! SimpleFilingFinished(fileContent, origin)
         }
         
       }
@@ -307,7 +319,7 @@ package edgar.actors {
         pendingWork.enqueue(Download(path, origin))
         checkDownloads()
 
-      case Finished(content, origin) =>
+      case SimpleFilingFinished(content, origin) =>
         origin ! EdgarRequests.FileContent(content)
         workItems.remove(sender)
         downloaders.enqueue(sender)
@@ -315,7 +327,7 @@ package edgar.actors {
           s" done, ${downloaders.size} download slots left")
         checkDownloads()
         
-      case StreamFinished(content, origin) =>
+      case XBRLLoadFinished(content, origin) =>
         log.info("Stream Finished...")
         origin ! EdgarRequests.StreamContent(content)
         workItems.remove(sender)

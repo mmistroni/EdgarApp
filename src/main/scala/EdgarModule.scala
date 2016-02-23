@@ -12,25 +12,31 @@ import java.util.zip.ZipInputStream
 // TODO: define specific types for XBRL content and for normal content, to avoid having String and List(String, String)
 package edgar.core {
 
+  
+  object EdgarTypes {
+    type XBRLFiling = List[(String, String)]
+    type SimpleFiling = String
+  
+  }
+  
   trait LogHelper {
     val loggerName = this.getClass.getName
     lazy val logger = Logger[this.type]
   }
   
   trait IndexProcessor {
-    
     def processIndexFile(fileContent: String): Seq[EdgarFiling]
   }
   
   
   trait EdgarSink {
-    def storeFileContent(fileContent: String)
+    def storeFileContent(fileContent: EdgarTypes.SimpleFiling)
     
-    def storeXBRLFile(fileList:List[(String, String)])
+    def storeXBRLFile(xbrl:EdgarTypes.XBRLFiling)
   }
 
   trait OutputStreamSink extends EdgarSink with LogHelper {
-    def storeFileContent(fileContent: String) = {
+    def storeFileContent(fileContent: EdgarTypes.SimpleFiling) = {
       val xmlContent = fileContent.substring(fileContent.indexOf("<ownershipDocument>"), fileContent.indexOf("</XML"))
       val xml = XML.loadString(xmlContent)
       val issuerName = xml \\ "issuerName"
@@ -40,7 +46,7 @@ package edgar.core {
 
     }
     
-    def storeXBRLFile(fileList:List[(String, String)]) = {
+    def storeXBRLFile(fileList:EdgarTypes.XBRLFiling) = {
       val (first, firstContent) = fileList.head
       logger.info(s"Content for $first is :\n$firstContent")
     }

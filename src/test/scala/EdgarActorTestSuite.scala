@@ -87,13 +87,13 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
     
     val mockSender = TestActorRef(new Actor {
       def receive = {
-        case _ => Finished("foo", null)
+        case _ => SimpleFilingFinished("foo", null)
       }
     })
     val childDownloader = TestActorRef(Props(classOf[ChildDownloader], mockFtpClient))
     within(2000 millis) {
       childDownloader ! Download(testFilePath, mockSender)
-      expectMsg(Finished(testFileContent, mockSender))
+      expectMsg(SimpleFilingFinished(testFileContent, mockSender))
     }
 
   }
