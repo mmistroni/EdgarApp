@@ -31,75 +31,31 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
   }
   
 
-  @Test @Ignore
-  def testDownloaderSynchronously() {
-
-    val downloader = TestActorRef[ChildDownloader]
-
-    implicit val timeout = Timeout(5 seconds)
-    val future = downloader ? DownloadFile("Foo")
-
-    val result = Await.result(future, 1 second)
-    assertEquals(FileContent("|CIX23|20911|4|COMPANY DATA|EDGAR/data/files"), result)
-
-  }
-  /** val retriever = TestActorRef(Props(classOf[IndexRetriever], downloader)) val sink = TestActorRef[EdgarFileSink] val sink2 = system.actorOf(Props[EdgarFileSink]) val fileManager = TestActorRef(Props(classOf[EdgarFileManager], downloader, sink)) val processor = TestActorRef(Props(classOf[IndexProcessor], fileManager)) val master = TestActorRef(Props(classOf[EdgarMaster], retriever, processor, fileManager)) **/
-
-  @Test @Ignore
-  def testDownloaderAsync() {
-
-    val downloader = TestActorRef[ChildDownloader]
-
-    within(1000 millis) {
-      downloader ! DownloadFile("Test")
-      expectMsg(FileContent("|CIX23|20911|4|COMPANY DATA|EDGAR/data/files"))
-    }
-
-  }
-
-  @Test @Ignore def testRetriever() {
-
-    val downloader = TestActorRef[ChildDownloader]
-    val retriever = TestActorRef(Props(classOf[IndexRetrieverActor], downloader))
+    
+  @Test def testRetriever() {
+    val indexFile = "IndexFile"
+    val baseDir = "baseDir"
+    val testFilePath = s"$baseDir/$indexFile"
+    val testFileContent = "|CIX23|20911|4|COMPANY DATA|EDGAR/data/files"
+    val mockFtpClient = Mockito.mock(classOf[FtpClient])
+    when(mockFtpClient.listDirectory(baseDir)).thenReturn(List(indexFile))
+    val downloaderProbe = TestProbe() 
+    val indexProcessorProbe = TestProbe()
+    val retriever = TestActorRef(Props(classOf[IndexRetrieverActor], indexProcessorProbe.ref,
+                                                                     downloaderProbe.ref,
+                                                                     mockFtpClient,
+                                                                     baseDir))
 
     within(1000 millis) {
       retriever ! DownloadLatestIndex
-      expectMsg(FileContent("|CIX23|20911|4|COMPANY DATA|EDGAR/data/files"))
+      downloaderProbe.expectMsg(1000 millis, DownloadFile(testFilePath));
+      downloaderProbe.reply(FileContent(testFileContent))
+      indexProcessorProbe.expectMsg(1000 millis ,ProcessIndexFile(testFileContent))
     }
 
   }
 
-  @Test def testFileSink() {
-    val mockEdgarSink =  Mockito.mock(classOf[EdgarSink])
-    val sink = TestActorRef(Props(classOf[EdgarFileSinkActor], mockEdgarSink))
-    val testString = "<ownershipDocument></ownershipDocument></XML>"
-    within(2000 millis) {
-      sink ! FilingInfo(testString)
-      expectNoMsg
-    }
-
-  }
-
-  @Test def testChildDownloadersFileSink() {
-    val testFilePath = "/test/filePath"
-    val testFileContent = "testFileContent"
-    val mockFtpClient = createMockFtpClient(testFilePath, testFileContent)
-    
-    val mockSender = TestActorRef(new Actor {
-      def receive = {
-        case _ => SimpleFilingFinished("foo", null)
-      }
-    })
-    val childDownloader = TestActorRef(Props(classOf[ChildDownloader], mockFtpClient))
-    within(2000 millis) {
-      childDownloader ! Download(testFilePath, mockSender)
-      expectMsg(SimpleFilingFinished(testFileContent, mockSender))
-    }
-
-  }
-
-  
-  @Test @Ignore def testIndexRetrieverWithProbe() {
+  @Test def testIndexRetrieverWithProbe() {
     val indexFile = "testIndexFile"
     val baseDir = "edgar-daily"
     val testFilePath = s"$baseDir/$indexFile"
@@ -126,7 +82,41 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
 
   }
 
-  @Test def testIndexProcessorActorWithProbe() {
+  
+  
+  
+  @Test  def testFileSink() {
+    val mockEdgarSink =  Mockito.mock(classOf[EdgarSink])
+    val sink = TestActorRef(Props(classOf[EdgarFileSinkActor], mockEdgarSink))
+    val testString = "<ownershipDocument></ownershipDocument></XML>"
+    within(2000 millis) {
+      sink ! FilingInfo(testString)
+      expectNoMsg
+    }
+
+  }
+
+  @Test  def testChildDownloadersFileSink() {
+    val testFilePath = "/test/filePath"
+    val testFileContent = "testFileContent"
+    val mockFtpClient = createMockFtpClient(testFilePath, testFileContent)
+    
+    val mockSender = TestActorRef(new Actor {
+      def receive = {
+        case _ => SimpleFilingFinished("foo", null)
+      }
+    })
+    val childDownloader = TestActorRef(Props(classOf[ChildDownloader], mockFtpClient))
+    within(2000 millis) {
+      childDownloader ! Download(testFilePath, mockSender)
+      expectMsg(SimpleFilingFinished(testFileContent, mockSender))
+    }
+
+  }
+
+  
+  
+  @Test  def testIndexProcessorActorWithProbe() {
     val testFileContent = "CIX23|20911|4|COMPANY DATA|EDGAR/data/files"
     val fileLines = testFileContent.split('|')
     val filteredFiles = List(fileLines).map(arr => EdgarFiling(arr(0), arr(3), 
@@ -150,12 +140,73 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
     Mockito.verify(mockIndexProcessor).processIndexFile(testFileContent)
   }
   
+
+  @Test  def testEdgarFileManagerForFileContentMessageToSink() {
+    val testFileContent = "<xmlContent>Test</xmlContent>"
+    val downloaderProbe = TestProbe() 
+    val edgarSinkProbe = TestProbe()
+                
+    val edgarFileManager = TestActorRef(Props(classOf[EdgarFileManager], 
+                                  downloaderProbe.ref,
+                                  edgarSinkProbe.ref))
+
+    within(1000 millis) {
+      edgarFileManager ! FileContent(testFileContent)
+      edgarSinkProbe.expectMsg(1000 millis, FilingInfo(testFileContent))
+    }
+
+  }
+  
+  @Test  def testEdgarFileManagerForStreamContentMessageToSink() {
+    val testFileContent:EdgarTypes.XBRLFiling = List(("fileName", "content"))
+    val downloaderProbe = TestProbe() 
+    val edgarSinkProbe = TestProbe()
+                
+    val edgarFileManager = TestActorRef(Props(classOf[EdgarFileManager], 
+                                  downloaderProbe.ref,
+                                  edgarSinkProbe.ref))
+
+    within(1000 millis) {
+      edgarFileManager ! StreamContent(testFileContent)
+      edgarSinkProbe.expectMsg(1000 millis, FilingXBRLInfo(testFileContent))
+    }
+
+  }
+
+  @Test def testEdgarFileManagerWorkflow() {
+    val testFileContent = "<xmlContent>Test</xmlContent>"
+    val testFilingFile = "testFilingFile"
+    val testEdgarFilings = EdgarFiling("cik", "asOfDate", "4",
+                                    "companyName", testFilingFile)
+    val filteredFilesMsg = FilteredFiles(List(testEdgarFilings))
+    val downloaderProbe = TestProbe() 
+    val edgarSinkProbe = TestProbe()
+    
+    val shutdownProbe = TestProbe()
+    shutdownProbe watch downloaderProbe.ref
+    
+    val edgarFileManager = TestActorRef(Props(classOf[EdgarFileManager], 
+                                  downloaderProbe.ref,
+                                  edgarSinkProbe.ref))
+
+    within(2000 millis) {
+      edgarFileManager ! filteredFilesMsg
+      downloaderProbe.expectMsg(1000 millis, DownloadFile(testFilingFile))
+      downloaderProbe.reply(FileContent(testFileContent))
+      edgarSinkProbe.expectMsg(1000 millis, FilingInfo(testFileContent))
+      
+    }
+    shutdownProbe.expectTerminated(downloaderProbe.ref);
+
+  }
+  
+  
+  
   
   // TODO
   /**
    * Test following actors
    * DownloadManager
-   * EdgarManager
    */
 
 }
