@@ -20,7 +20,6 @@ package edgar.core {
     def processIndexFile(fileContent: String): Seq[EdgarFiling]
   }
   
-  
   trait EdgarSink {
     def storeFileContent(fileContent: EdgarTypes.SimpleFiling)
     
@@ -74,13 +73,9 @@ package edgar.core {
     def edgarFtpClient(password:String):FtpClient
   }
   
-  
-  
   object EdgarFactory extends DefaultFactory with FtpFactory {
-    import EdgarPredicates._
     
     def edgarSink() = new OutputStreamSink{}
-    
     def indexProcessor(filterFunction: Array[String] => Boolean) = new IndexProcessorImpl(filterFunction)
   }
   
@@ -90,26 +85,7 @@ package edgar.core {
   
   }
   
-  object EdgarPredicates {
-
-    type EdgarFilter = EdgarFiling => Boolean
-
-    val cikEquals: String => EdgarFilter = cik => filing => filing.cik == cik
-
-    val formTypeEquals: String => EdgarFilter = formType => filing => filing.formType == formType
-
-    val companyNameEquals: String => EdgarFilter = companyName => filing => filing.companyName == companyName
-
-    def formTypeIn: Set[String] => EdgarFilter = formTypes => filing => formTypes.contains(filing.formType)
-
-    def cikIn: Set[String] => EdgarFilter = cikList => filing => cikList.contains(filing.cik)
-
-    def and(predicates: Seq[EdgarFilter])(filing: EdgarFiling) = predicates.forall(predicate => predicate(filing))
-
-    def or(predicates: Seq[EdgarFilter])(filing: EdgarFiling) = predicates.exists(predicate => predicate(filing))
-
-  }
-
+  
 
 }
 

@@ -30,7 +30,6 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
     mockFtpClient
   }
   
-
     
   @Test def testRetriever() {
     val indexFile = "IndexFile"
@@ -82,9 +81,6 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
 
   }
 
-  
-  
-  
   @Test  def testFileSink() {
     val mockEdgarSink =  Mockito.mock(classOf[EdgarSink])
     val sink = TestActorRef(Props(classOf[EdgarFileSinkActor], mockEdgarSink))
@@ -96,7 +92,7 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
 
   }
 
-  @Test  def testChildDownloadersFileSink() {
+  @Test  def testChildDownloaders() {
     val testFilePath = "/test/filePath"
     val testFileContent = "testFileContent"
     val mockFtpClient = createMockFtpClient(testFilePath, testFileContent)
@@ -114,8 +110,6 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
 
   }
 
-  
-  
   @Test  def testIndexProcessorActorWithProbe() {
     val testFileContent = "CIX23|20911|4|COMPANY DATA|EDGAR/data/files"
     val fileLines = testFileContent.split('|')
@@ -200,13 +194,24 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
 
   }
   
-  
-  
-  
-  // TODO
-  /**
-   * Test following actors
-   * DownloadManager
-   */
+  @Test  def testDownloadManager() {
+    val testFileName = "testFileName"
+    val testFileContent = "testFileContent"
+    
+    object fakeFtpFactory extends DefaultFactory {
+      def edgarFtpClient(password:String):FtpClient = createMockFtpClient(testFileName, testFileContent)
+      def indexProcessor(filterFunction:Array[String]=>Boolean) = null
+      def edgarSink = null
+    }
 
+    val testFtpFactory = fakeFtpFactory
+    val downloadManager = TestActorRef(Props(classOf[DownloadManager], 
+                                  1, testFtpFactory))
+
+    within(2000 millis) {
+      downloadManager ! DownloadFile(testFileName)
+      expectMsg(FileContent(testFileContent))
+    }
+
+  }
 }
