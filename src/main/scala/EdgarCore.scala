@@ -45,8 +45,8 @@ package edgar.core {
     
   }
 
-  case class EdgarFiling(val cik: String, val asOfDate: String,
-                         val formType: String, val companyName: String, val filingPath: String)
+  case class EdgarFiling(cik: String, asOfDate: String,
+                         formType: String, companyName: String, filingPath: String)
 
   
   class IndexProcessorImpl(filterFunction: Array[String] => Boolean) extends IndexProcessor with LogHelper {
