@@ -89,4 +89,69 @@ class EdgarPredicatesTestSuite extends FunSuite  with Matchers {
     assertFalse(or(combinedPredicates)(testEdgarFiling3))
   }
   
+  test("excludeFormTypes ") {
+    val (cik, asOfDate, formType, companyName, filingPath) = ("1", "20111021", "4", "xxx", "aaa")
+  
+    val predicateExcludeFormTypes = excludeFormTypes(List("482"))
+    val predicate2 = formTypeEquals(formType)
+    
+    val testEdgarFiling = createEdgarFiling(cik, asOfDate, formType, companyName, filingPath)
+    val testEdgarFiling2 = testEdgarFiling.copy(cik="x")
+    val testEdgarFiling3 = testEdgarFiling.copy(cik="xxxx", formType="5")
+    val testEdgarFiling4 = testEdgarFiling.copy(formType="482")
+    assertTrue(predicateExcludeFormTypes(testEdgarFiling))
+    assertTrue(predicateExcludeFormTypes(testEdgarFiling2))
+    assertTrue(predicateExcludeFormTypes(testEdgarFiling3))
+    assertFalse(predicateExcludeFormTypes(testEdgarFiling4))
+    
+  }
+  
+ test("combine and & or predicates") {
+    val (cik, asOfDate, formType, companyName, filingPath) = ("1", "20111021", "4", "xxx", "aaa")
+    val edgarFiling = createEdgarFiling(cik, asOfDate, formType, companyName, filingPath)
+    val edgarFiling482 = edgarFiling.copy(formType="482")
+    val edgarFiling13F = edgarFiling.copy(cik="2", formType="13F")
+    val edgarFiling4 = edgarFiling.copy(formType="4")
+    val edgarFiling4OtherCik = edgarFiling.copy(cik="2", formType="4")
+    val cikInFilter = cikIn(Set("1"))
+    val excludeFormFilter = excludeFormTypes(List("482"))
+    val includeFormFilter = formTypesIn2(Seq("13F"))
+    val sameCikCombinationsFilter = and(Seq(cikInFilter, excludeFormFilter))_
+    val sameCikOrForm13FFilter = or(Seq(sameCikCombinationsFilter, includeFormFilter))_
+    // individualFilters
+    assertTrue(cikInFilter(edgarFiling))
+    assertTrue(cikInFilter(edgarFiling482))
+    assertFalse(cikInFilter(edgarFiling13F))
+    assertTrue(cikInFilter(edgarFiling4))
+    assertFalse(cikInFilter(edgarFiling4OtherCik))
+    assertTrue(excludeFormFilter(edgarFiling))
+    assertFalse(excludeFormFilter(edgarFiling482))
+    assertTrue(excludeFormFilter(edgarFiling13F))
+    assertTrue(excludeFormFilter(edgarFiling4))
+    assertFalse(includeFormFilter(edgarFiling))
+    assertFalse(includeFormFilter(edgarFiling482))
+    assertTrue(includeFormFilter(edgarFiling13F))
+    assertFalse(includeFormFilter(edgarFiling4))
+    // combined Filter
+    assertTrue(sameCikCombinationsFilter(edgarFiling))
+    assertFalse(sameCikCombinationsFilter(edgarFiling482))
+    assertFalse(sameCikCombinationsFilter(edgarFiling13F))
+    assertTrue(sameCikCombinationsFilter(edgarFiling4))
+    // global filter
+    assertTrue(sameCikOrForm13FFilter(edgarFiling))
+    assertFalse(sameCikOrForm13FFilter(edgarFiling482))
+    assertTrue(sameCikOrForm13FFilter(edgarFiling13F))
+    assertTrue(sameCikOrForm13FFilter(edgarFiling4))
+    
+    
+    
+    
+    
+    
+   
+   
+ }
+  
+  
+  
 }

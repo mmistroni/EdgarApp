@@ -13,6 +13,7 @@ import scala.io._
 import java.io._
 import org.apache.commons.net.ftp.FTPFile
 import Assert._
+import edgar.predicates.EdgarPredicates._
 
 import org.mockito.{ Mockito, Matchers=>MockitoMatchers}
 import akka.testkit._
@@ -172,7 +173,9 @@ class EdgarModuleTestSuite extends FunSuite  with Matchers {
   
   test(" indexProcessorTest") {
   
-    val filterFunction = (arr:Array[String]) => arr(2) == "4"
+    
+    val filterFunction = formTypeIn(Set("4"))
+    
     
     val indexProcessor = new IndexProcessorImpl(filterFunction)
     

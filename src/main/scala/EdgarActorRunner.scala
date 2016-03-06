@@ -4,63 +4,36 @@ import akka.actor._
 
 import edgar.actors._
 import edgar.actors.EdgarRequests._
+import edgar.predicates.EdgarPredicates._
 import edgar.ftp._
 import edgar.core._
-
+import edgar.predicates.EdgarPredicates.or
 import java.util.UUID
 
 object EdgarActorRunner extends App with LogHelper {
 
   logger.info("Starting the Actor System....")
-
+  
+  def createFilterFunction():EdgarFilter = {
+    val cikFilter = cikIn(Set("886982", "19617", "1067983"))     // GS, JPM. BRKB)
+    val includeFormTypesFilter = formTypeIn(Set("13F"))
+    val excludeFormTypesFilter = excludeFormTypes(List("424B2"))
+    val sameCikFilter  = and(Seq(cikFilter, excludeFormTypesFilter))_
+    or(Seq(sameCikFilter, includeFormTypesFilter ))
+  }
+  
+  val filterFunction = createFilterFunction //formTypeIn(Set("13F"))
+  
   val system = ActorSystem("Edgar-Filings-Downloader")
-
   val factory = EdgarFactory
 
-  /**
-   * Simple text filings
-   *
-   * <documentType>4</documentType>
-   *
-   * <periodOfReport>2016-02-25</periodOfReport>
-   *
-   * <issuer>
-   * <issuerCik>0001000623</issuerCik>
-   *
-   *
-   *
-   * XBRL filings
-   * -<xbrli:context id="FD2015Q4YTD">
-   *
-   *
-   * -<xbrli:entity>
-   *
-   * <xbrli:identifier scheme="http://www.sec.gov/CIK">0001000623</xbrli:identifier>
-   *
-   * </xbrli:entity>
-   *
-   *
-   * -<xbrli:period>
-   *
-   * <xbrli:startDate>2015-01-01</xbrli:startDate>
-   *
-   * <xbrli:endDate>2015-12-31</xbrli:endDate>
-   *
-   * </xbrli:period>
-   *
-   * </xbrli:context>
-   *
-   *
-   *
-   */
-
+  
   val downloader =
     system.actorOf(Props(classOf[DownloadManager], 3, factory), "DownloadManager")
   val edgarFileSink = system.actorOf(Props(classOf[EdgarFileSinkActor], factory.edgarSink()), "EdgarFileSink")
   val edgarFileManager = system.actorOf(Props(classOf[EdgarFileManager],
     downloader, edgarFileSink), "EdgarFileManager")
 
-  val filterFunction = (lineArray: Array[String]) => lineArray.size > 2 && lineArray(2) == "13-F"
   val indexProcessor = system.actorOf(Props(classOf[IndexProcessorActor],
     new IndexProcessorImpl(filterFunction),
     edgarFileManager), "IndexProcessor")

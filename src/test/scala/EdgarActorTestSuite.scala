@@ -199,8 +199,9 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
     val testFileContent = "testFileContent"
     
     object fakeFtpFactory extends DefaultFactory {
+      import edgar.predicates.EdgarPredicates._
       def edgarFtpClient(password:String):FtpClient = createMockFtpClient(testFileName, testFileContent)
-      def indexProcessor(filterFunction:Array[String]=>Boolean) = null
+      def indexProcessor(filterFunction:EdgarFilter) = null
       def edgarSink = null
     }
 

@@ -20,7 +20,7 @@ package edgar.actors {
     case class DownloadFailed(fileContent: String, origin: ActorRef, downloader: ActorRef)
   }
 
-  object EdgarRequests {
+  object EdgarRequests extends LogHelper {
 
     import EdgarTypes.{ SimpleFiling, XBRLFiling }
 
@@ -55,11 +55,14 @@ package edgar.actors {
     case object Shutdown
 
     def createEdgarFilingMessage(filing: EdgarFiling): EdgarRequest = filing.formType match {
-      case xbrl if List("10-K", "20-F", "40-F", "10-Q", "8-K", "6-K").contains(xbrl) => {
+      case xbrl if List("10-K", "20-F", "40-F", "10-Q", 
+                        "8-K", 
+                        "6-K").contains(xbrl) => {
         val filePath = filing.filingPath;
         val adjustedPath = filePath.substring(0, filePath.indexOf(".")).replace("-", "")
         val fileName = filePath.split("/").last.replace(".txt", "-xbrl.zip")
         val fullPath = s"$adjustedPath/$fileName"
+        logger.info("Creting Message:" + filing)
         DownloadFile(fullPath)
       }
       case _ => DownloadFile(filing.filingPath)
@@ -134,7 +137,10 @@ package edgar.actors {
     val log = Logging(context.system, this)
     var count = 0
 
-    private def createMessage(filing: EdgarFiling) = EdgarRequests.createEdgarFilingMessage(filing)
+    private def createMessage(filing: EdgarFiling) = {
+      log.info(filing.toString)
+      EdgarRequests.createEdgarFilingMessage(filing)
+    }
 
     def receive = {
 
@@ -257,15 +263,11 @@ package edgar.actors {
           case jns: java.lang.Exception =>
             val originalMessage = workItems.get(sender).get
             log.info(s"Error while Downloading ${originalMessage}: $jns")
-            log.info(s"$sender")
             workItems.remove(sender)
             // creating new sender
-            log.info(s"before restart we have ${downloaders.size}")
-            log.info("Sender Removed")
             downloaders.enqueue(sender)
             log.info("Enqueuing Sender")
-            log.info(s"after enqueuing  we have ${downloaders.size}")
-
+            
             pendingWork.enqueue(originalMessage)
             Restart // something went wrong. restarting actors
           case _ =>

@@ -5,7 +5,12 @@ name := "SBTProject"
 // The other method is <<=
 // All other initialization methods are implemented in terms of these.
 version := "1.0"
+
 scalaVersion := "2.11.7"
+
+assemblyJarName in assembly := "edgarretriever.jar"
+
+mainClass in assembly := Some("EdgarActorRunner")
 
 // Add a single dependency
 libraryDependencies += "junit" % "junit" % "4.8" % "test"
