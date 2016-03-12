@@ -3,7 +3,7 @@ import scala.xml.XML
 import org.apache.commons.net.ftp.FTPClient
 import scala.io._
 import edgar.ftp.FtpFactory
-import edgar.predicates.EdgarPredicates.EdgarFilter
+import edgar.predicates.EdgarPredicates._
 
 import java.io._
 import org.apache.commons.net.ftp.FTP._
@@ -69,13 +69,14 @@ package edgar.core {
 
   trait OutputStreamSink extends EdgarSink with LogHelper {
     def storeFileContent(fileContent: EdgarTypes.SimpleFiling) = {
-      if (fileContent.indexOf("<ownershipDocument>") >= 0) {
-        val xmlContent = fileContent.substring(fileContent.indexOf("<ownershipDocument>"), fileContent.indexOf("</XML"))
+      if (fileContent.indexOf("<edgarSubmission") >= 0) {
+        val xmlContent = fileContent.substring(fileContent.indexOf("<edgarSubmission"), fileContent.indexOf("</XML"))
         val xml = XML.loadString(xmlContent)
+        val formType = xml \\ "submissionType"
         val issuerName = xml \\ "issuerName"
         val issuerCik = xml \\ "issuerCik"
         val reportingOwnerCik = xml \\ "rptOwnerCik"
-        logger.info(s"FileSink.$issuerName|$issuerCik|$reportingOwnerCik")
+        logger.info(s"FileSink.|$formType|$issuerName|$issuerCik|$reportingOwnerCik")
       } else {
         logger.info("Invalid XML content..")
       }
@@ -101,8 +102,8 @@ package edgar.core {
                                               arr(2), arr(1),
                                               arr(4)))
       logger.info("original file has:" + lines.size)
-      logger.info(lines)
       val res = lines.filter(filterFunction)
+      res.foreach(filing => println(filing))
       logger.info(s"After filtering we got:${res.size}")
       res
     }

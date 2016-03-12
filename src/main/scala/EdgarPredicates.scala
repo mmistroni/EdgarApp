@@ -11,7 +11,7 @@ package edgar.predicates {
     
     val cikEquals: String => EdgarFilter = cik => filing => filing.cik == cik
 
-    val formTypeEquals: String => EdgarFilter = formType => filing => filing.formType == formType
+    val formTypeEquals: String => EdgarFilter = formType => filing => filing.formType.equals(formType)
 
     val companyNameEquals: String => EdgarFilter = companyName => filing => filing.companyName == companyName
 

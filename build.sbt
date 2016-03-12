@@ -30,5 +30,7 @@ libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.5",
                             "org.clapper" %% "grizzled-slf4j" % "1.0.2")
 libraryDependencies += "me.lessis" %% "courier" % "0.1.3"
 libraryDependencies += "org.jvnet.mock-javamail" % "mock-javamail" % "1.9" % "test"
+libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4"
+
 resolvers += "softprops-maven" at "http://dl.bintray.com/content/softprops/maven"
 
