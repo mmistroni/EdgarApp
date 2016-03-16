@@ -13,28 +13,23 @@ import edgar.ftp._
 object FutureEdgarRunner extends App {
   println("Kicking off EdgarModule")
 
-  val edgarClient = new EdgarModule {
-    val ftpClient = new ApacheFTPClient {
-      val ftpConfig = new FtpConfig {
-        val username = "anonymous"
-        val password = "tmp2@gmail.com"
-        val host = "ftp.sec.gov"
-      }
-    }
-  }
+  import edgar.core.EdgarFactory
+  val factory = EdgarFactory
+  
+  val edgarClient = factory.edgarFtpClient("tmp@gmail.com")
 
   // Future 1. Retrieve All Filng Files
   def getFilingFiles(filingFiles: List[(String, String, String)]): Future[List[String]] = Future {
 
-    val xmlContents = for ((cik, form, filingFile) <- filingFiles) yield edgarClient.downloadFile(filingFile)
+    val xmlContents = for ((cik, form, filingFile) <- filingFiles) yield edgarClient.retrieveFile(filingFile)
 
     xmlContents.map(content => content.substring(content.indexOf("<ownershipDocument>"), content.indexOf("</XML")))
 
   }
 
   // Future 2. Get All Files in MasterDir
-  def getEgarMasterIndexesFuture(baseDirName: String, edgarClient: EdgarModule): Future[List[String]] = Future {
-    edgarClient.list(baseDirName)
+  def getEgarMasterIndexesFuture(baseDirName: String, edgarClient: FtpClient): Future[List[String]] = Future {
+    edgarClient.listDirectory(baseDirName)
   }
 
   def extractContent(fileContent: String): List[String] = {
@@ -42,9 +37,9 @@ object FutureEdgarRunner extends App {
   }
 
   // Future 3. process the List of files
-  def processList(dirContent: List[String], edgarClient: EdgarModule): Future[List[String]] = Future {
+  def processList(dirContent: List[String], edgarClient: FtpClient): Future[List[String]] = Future {
     val latest = dirContent.last
-    edgarClient.downloadFile(s"edgar/daily-index/$latest").split("\n").toList
+    edgarClient.retrieveFile(s"edgar/daily-index/$latest").split("\n").toList
   }
 
   // Future4 . filter lines  we are interested in

@@ -46,6 +46,7 @@ package edgar.ftp {
     }
   }
 
+  
   trait ApacheFTPClient extends FtpClient {
 
     lazy val ftpClient = new FTPClient()

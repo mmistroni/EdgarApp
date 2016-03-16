@@ -70,6 +70,8 @@ package edgar.core {
   trait OutputStreamSink extends EdgarSink with LogHelper {
     def storeFileContent(fileContent: EdgarTypes.SimpleFiling) = {
       if (fileContent.indexOf("<edgarSubmission") >= 0) {
+        logger.info("We got:\n" + fileContent)
+      
         val xmlContent = fileContent.substring(fileContent.indexOf("<edgarSubmission"), fileContent.indexOf("</XML"))
         val xml = XML.loadString(xmlContent)
         val formType = xml \\ "submissionType"

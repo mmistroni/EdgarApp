@@ -78,16 +78,7 @@ class EdgarModuleTestSuite extends FunSuite  with Matchers {
     
   }
   
-  test("testFtpClientWithThinCakePattern") {
-
-    object fake extends EdgarModule with MockedFtpClient
-
-    val edgarClient = fake
-
-    edgarClient.list(testDirName) should be(testListDirValues)
-
-  }
-  
+    
   class MockApacheFtpClient extends FTPClient {
       
       override def connect(host:String) = {}
