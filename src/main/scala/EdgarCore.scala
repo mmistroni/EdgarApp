@@ -60,18 +60,15 @@ package edgar.core {
    *
    */
 
-    
-    
     def storeFileContent(fileContent: EdgarTypes.SimpleFiling)
     
     def storeXBRLFile(xbrl:EdgarTypes.XBRLFiling)
   }
 
+  
   trait OutputStreamSink extends EdgarSink with LogHelper {
     def storeFileContent(fileContent: EdgarTypes.SimpleFiling) = {
-      if (fileContent.indexOf("<edgarSubmission") >= 0) {
-        logger.info("We got:\n" + fileContent)
-      
+      if (fileContent.indexOf("<informationTable") >= 0) {
         val xmlContent = fileContent.substring(fileContent.indexOf("<edgarSubmission"), fileContent.indexOf("</XML"))
         val xml = XML.loadString(xmlContent)
         val formType = xml \\ "submissionType"
@@ -79,8 +76,23 @@ package edgar.core {
         val issuerCik = xml \\ "issuerCik"
         val reportingOwnerCik = xml \\ "rptOwnerCik"
         logger.info(s"FileSink.|$formType|$issuerName|$issuerCik|$reportingOwnerCik")
+        logger.info(fileContent.indexOf("<informationTable"))
+        logger.info(fileContent.indexOf("</informationTable"))
+        val informationTable = fileContent.substring(fileContent.indexOf("<informationTable"), 
+                                  fileContent.indexOf("</informationTable>") + 20)
+        logger.info(informationTable)
+        val infoTableXml = XML.loadString(informationTable)
+        val purchasedShares = infoTableXml \\ "nameOfIssuer"
+        logger.info("Isuere :" + infoTableXml \\ "nameOfIssuer")
+        logger.info(infoTableXml \\ "investmentDiscretion")
+        
+        
+      } else if (fileContent.indexOf("<?xml version") >= 0) {
+        val xmlStart = fileContent.substring(fileContent.indexOf("?>") +2, fileContent.indexOf("</XML"))
+        logger.info("Generic XMl:\n" + xmlStart)
       } else {
-        logger.info("Invalid XML content..")
+        val formType = fileContent.substring(fileContent.indexOf("<TYPE>") + 6, fileContent.indexOf("<SEQUENCE")).trim();
+        logger.info("Invalid content for forMTYPE:" + formType)
       }
     }
     
@@ -103,10 +115,7 @@ package edgar.core {
                       .map(arr => EdgarFiling(arr(0), arr(3),
                                               arr(2), arr(1),
                                               arr(4)))
-      logger.info("original file has:" + lines.size)
       val res = lines.filter(filterFunction)
-      res.foreach(filing => println(filing))
-      logger.info(s"After filtering we got:${res.size}")
       res
     }
 

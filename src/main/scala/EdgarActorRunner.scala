@@ -19,10 +19,11 @@ object EdgarActorRunner extends App with LogHelper {
     val includeFormTypesFilter = formTypeIn(Set("13F-HR"))
     val excludeFormTypesFilter = excludeFormTypes(List("424B2", "8-K"))
     val sameCikFilter  = and(Seq(cikFilter, excludeFormTypesFilter))_
-    or(Seq(sameCikFilter, includeFormTypesFilter ))_
+    //or(Seq(sameCikFilter, includeFormTypesFilter ))_
+    includeFormTypesFilter
   }
   
-  val filterFunction = createFilterFunction() //formType2In(Seq("13F-HR"))
+  val filterFunction = formType2In(Seq("13F-HR"))
   
   val system = ActorSystem("Edgar-Filings-Downloader")
   val factory = EdgarFactory

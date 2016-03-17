@@ -53,6 +53,7 @@ package edgar.ftp {
     val ftpConfig: FtpConfig
 
     protected def readStream(is: InputStream) = {
+      //IOUtils.toString(is, "UTF-8")
       val reader = new BufferedReader(new InputStreamReader(is))
       try {
         def readLine(reader: BufferedReader, acc: StringBuffer): StringBuffer = {
@@ -67,6 +68,7 @@ package edgar.ftp {
         reader.close()
         is.close()
       }
+      
     }
 
     private def connect() = {
