@@ -29,8 +29,10 @@ libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.5",
                             "org.slf4j" % "slf4j-simple" % "1.7.5",
                             "org.clapper" %% "grizzled-slf4j" % "1.0.2")
 libraryDependencies += "me.lessis" %% "courier" % "0.1.3"
-libraryDependencies += "org.jvnet.mock-javamail" % "mock-javamail" % "1.9" % "test"
 libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4"
-
+libraryDependencies += "javax.activation" % "activation" % "1.1.1"
+libraryDependencies += "javax.mail" % "mail" % "1.4.7"
+libraryDependencies += "org.apache.commons" % "commons-email" % "1.4"
+libraryDependencies += "org.powermock" % "powermock-mockito-release-full" % "1.5.4" % "test"
 resolvers += "softprops-maven" at "http://dl.bintray.com/content/softprops/maven"
 

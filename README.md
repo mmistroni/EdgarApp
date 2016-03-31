@@ -13,3 +13,7 @@ the FTP Server until only 5 files can be downloaded at the same time
 
 There are also Unit tests exercising actors (using testkit) and other modules
 using Mockito
+
+TODO:
+Implement logic based on ParserCombinators to parse command line parameters
+in order to parameterize factories used in application

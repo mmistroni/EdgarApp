@@ -46,14 +46,12 @@ package edgar.ftp {
     }
   }
 
-  
   trait ApacheFTPClient extends FtpClient {
 
     lazy val ftpClient = new FTPClient()
     val ftpConfig: FtpConfig
 
     protected def readStream(is: InputStream) = {
-      //IOUtils.toString(is, "UTF-8")
       val reader = new BufferedReader(new InputStreamReader(is))
       try {
         def readLine(reader: BufferedReader, acc: StringBuffer): StringBuffer = {

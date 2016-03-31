@@ -22,4 +22,5 @@ object MailerApp extends App{
     }
 
     println("Out of here")
+    Thread.sleep(5000)
 }
