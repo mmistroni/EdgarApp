@@ -10,7 +10,7 @@ import edgar.core._
 import edgar.predicates.EdgarPredicates.or
 import java.util.UUID
 
-object EdgarActorRunner extends App with LogHelper {
+object EdgarActorRunner extends App with edgar.util.LogHelper {
 
   logger.info("Starting the Actor System....")
   

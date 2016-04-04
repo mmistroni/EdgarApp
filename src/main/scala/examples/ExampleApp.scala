@@ -11,6 +11,7 @@ import edgar.actors.EdgarRequests._
 import edgar.predicates.EdgarPredicates._
 import edgar.ftp
 import edgar.core._
+import edgar.util.LogHelper
 import edgar.predicates.EdgarPredicates.or
 import java.util.UUID
 

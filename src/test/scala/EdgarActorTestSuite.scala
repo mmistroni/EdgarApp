@@ -29,7 +29,6 @@ class EdgarActorTestSuite extends TestKit(ActorSystem("testSystem")) with Implic
     when(mockFtpClient.retrieveFile(testFileName)).thenReturn(testFileContent)
     mockFtpClient
   }
-  
     
   @Test def testRetriever() {
     val indexFile = "IndexFile"
