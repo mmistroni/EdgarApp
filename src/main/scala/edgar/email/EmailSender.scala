@@ -30,7 +30,6 @@ trait EmailSender extends LogHelper{
       mimeMessage.setContent(content, "text/html");
       mimeMessage.setRecipients(Message.RecipientType.TO,
                                 createAddresses(recipients))
-      
       mimeMessage
       
     }

@@ -11,7 +11,7 @@ trait EdgarSink {
   def emptySink()
 }
 trait OutputStreamSink extends EdgarSink with LogHelper {
-  var messageList = new scala.collection.mutable.ListBuffer[(String, Seq[String])]()
+  private val messageMap = scala.collection.mutable.Map[String, Seq[String]]()
 
   def storeFileContent(fileContent: EdgarTypes.SimpleFiling) = {
     if (fileContent.indexOf("<informationTable") >= 0) {
@@ -22,7 +22,7 @@ trait OutputStreamSink extends EdgarSink with LogHelper {
       val issuerCik = xml \\ "issuerCik"
       val reportingOwnerCik = xml \\ "rptOwnerCik"
       val filingManager = xml \\ "filingManager" \\ "name"
-      logger.info(s"FileSink|$formType.text|$issuerName.text|$issuerCik.text|$reportingOwnerCik.text|$filingManager.text")
+      logger.debug(s"FileSink|$formType.text|$issuerName.text|$issuerCik.text|$reportingOwnerCik.text|$filingManager.text")
       logger.debug(fileContent.indexOf("<informationTable"))
       logger.debug(fileContent.indexOf("</informationTable"))
       val informationTable = fileContent.substring(fileContent.indexOf("<informationTable"),
@@ -32,7 +32,8 @@ trait OutputStreamSink extends EdgarSink with LogHelper {
       val purchasedShares = infoTableXml \\ "nameOfIssuer"
       val holdingSecurities = infoTableXml \\ "nameOfIssuer"
       holdingSecurities.foreach(iss => logger.debug(iss.text))
-      messageList.append((filingManager.text, holdingSecurities.map(_.text)))
+      messageMap += (filingManager.text -> holdingSecurities.map(_.text).distinct)
+      
 
     } else if (fileContent.indexOf("<?xml version") >= 0) {
       val xmlStart = fileContent.substring(fileContent.indexOf("?>") + 2, fileContent.indexOf("</XML"))
@@ -46,11 +47,16 @@ trait OutputStreamSink extends EdgarSink with LogHelper {
   def storeXBRLFile(fileList: EdgarTypes.XBRLFiling) = {
     val (first, firstContent) = fileList.head
     logger.info(s"Content for $first is :\n$firstContent")
+    
   }
 
   def emptySink = {
     logger.info("We hsould send all informations we have collected..")
-    logger.info(this.messageList)
+    for ((k, v) <- messageMap) {
+      val securities = v.mkString(",")
+      logger.info(s"Securities Held by [$k]:\n $securities")
+    }
+    
   }
 
 }
