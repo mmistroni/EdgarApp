@@ -43,7 +43,7 @@ class EmailTestSuite { //extends FunSuite {
     override def _createMimeMessage = mockMimeMessage
   }
 
-  object MockEmail extends SimpleEmail
+  object MockEmail extends HtmlEmail
   
   @Test @Ignore def testBuildEmail() {
     val recipients = Seq("test@gmail.com")
@@ -81,7 +81,7 @@ class EmailTestSuite { //extends FunSuite {
   
   @Test 
   def testBuildMailUsingCommonsNetEmailSender() {
-    val mockEmail = Mockito.mock(classOf[SimpleEmail])
+    val mockEmail = Mockito.mock(classOf[HtmlEmail])
     val testConfigProperties = createMockConfig
     val recipients = "test@gmail.com"
     val content = "content"
@@ -98,14 +98,14 @@ class EmailTestSuite { //extends FunSuite {
     Mockito.verify(mockEmail, Mockito.times(1)).setSmtpPort(testConfigProperties.port)
     Mockito.verify(mockEmail, Mockito.times(1)).setFrom(testConfigProperties.fromAddress)
     Mockito.verify(mockEmail, Mockito.times(1)).setSubject(subject)
-    Mockito.verify(mockEmail, Mockito.times(1)).setMsg(content)
+    Mockito.verify(mockEmail, Mockito.times(1)).setHtmlMsg(content)
     
   }
   
   @Test 
   def testSendMailUsingCommonsNetEmailSender() {
     val sendResult = "email sent!"
-    class MockEmail extends SimpleEmail {
+    class MockEmail extends HtmlEmail {
       var result = ""
       override def send():String = {
         result = sendResult

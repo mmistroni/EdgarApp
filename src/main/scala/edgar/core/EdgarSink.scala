@@ -13,6 +13,9 @@ trait EdgarSink {
 trait OutputStreamSink extends EdgarSink with LogHelper {
   private val messageMap = scala.collection.mutable.Map[String, Seq[String]]()
 
+  
+  def securitesMap = messageMap
+  
   def storeFileContent(fileContent: EdgarTypes.SimpleFiling) = {
     if (fileContent.indexOf("<informationTable") >= 0) {
       val xmlContent = fileContent.substring(fileContent.indexOf("<edgarSubmission"), fileContent.indexOf("</XML"))

@@ -44,12 +44,16 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
     
     val emailSink = new OutputStreamSink with CommonsNetEmailSender {
       override val mailConfigProperties = config
+      import edgar.util.HtmlTableGenerator._
       
       override def emptySink = {
         logger.info("MyEmailSink. calling super empty sink")
         super.emptySink
         logger.info("And now displaying mail properties..")
         logger.info(mailConfigProperties.toProperties)
+        logger.info("Sending Content..")
+        val content = generateHtmlTable(this.securitesMap)
+        this.sendMail("Edgar Institutional Investor Securities", content, sys.env.get("smtp.recipients").get)
       }
     }
       
@@ -75,14 +79,25 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
     master ! Start
   }
   
+  val environmentVar = sys.env
+  
+  println("Checking basic properties have been configured")
+  val environmentProperties = sys.env
+  val requiredProperties  = List("smtp.host", "smtp.username", "smtp.password",
+                              "smtp.port", "smtp.recipients")
+  val allPropertiesConfigured= requiredProperties.forall { prop => environmentProperties.keySet.contains(prop) }
+  
   println("Smpt host=" + sys.env.get("smtp.host"))
   println("username=" + sys.env.get("smtp.username"))
   println("Password=" + sys.env.get("smtp.password"))
   println("Port=" + sys.env.get("smtp.port"))
   println("Recipients" + sys.env.get("smtp.recipients"))
-  
-  println("Launching Actor System...")
-  launchActorSystem
-  
+  if (!allPropertiesConfigured) {
+    println("Not all properties have been configured... exiting")
+    System.exit(0)
+  } else {
+    println("Launching Actor System...")
+    launchActorSystem
+  }
 
 }

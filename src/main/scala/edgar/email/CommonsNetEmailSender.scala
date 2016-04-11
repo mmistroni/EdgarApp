@@ -6,7 +6,7 @@ trait CommonsNetEmailSender extends LogHelper {
 
   val mailConfigProperties: EmailConfig
 
-  def createEmail = new SimpleEmail()
+  def createEmail = new HtmlEmail()
 
   def buildEmail(subject: String, content: String, recipients: String*) = {
     val email = createEmail
@@ -18,7 +18,7 @@ trait CommonsNetEmailSender extends LogHelper {
     email.setSSLOnConnect(true)
     email.setFrom(mailConfigProperties.fromAddress)
     email.setSubject(subject)
-    email.setMsg(content)
+    email.setHtmlMsg(content)
     email.addTo(recipients: _*)
   }
 
