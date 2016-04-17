@@ -1,5 +1,5 @@
 // Set the project name to the string 'My Project'
-name := "SBTProject"
+name := "EdgarRetriever"
 
 // The := method used in Name and Version is one of two fundamental methods.
 // The other method is <<=
@@ -10,7 +10,7 @@ scalaVersion := "2.11.7"
 
 assemblyJarName in assembly := "edgarretriever.jar"
 
-mainClass in assembly := Some("EdgarActorRunner")
+mainClass in assembly :=   Some("edgar.spark.EdgarSparkDownloader")//Some("EdgarActorRunner")
 
 // Add a single dependency
 libraryDependencies += "junit" % "junit" % "4.8" % "test"
@@ -34,5 +34,9 @@ libraryDependencies += "javax.activation" % "activation" % "1.1.1"
 libraryDependencies += "javax.mail" % "mail" % "1.4.7"
 libraryDependencies += "org.apache.commons" % "commons-email" % "1.4"
 libraryDependencies += "org.powermock" % "powermock-mockito-release-full" % "1.5.4" % "test"
+libraryDependencies += "org.apache.spark" %% "spark-core"   % "1.6.1" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-streaming"   % "1.6.1" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-mllib"   % "1.6.1"  % "provided"
+
 resolvers += "softprops-maven" at "http://dl.bintray.com/content/softprops/maven"
 
