@@ -113,7 +113,7 @@ class EdgarModuleTestSuite extends FunSuite  with Matchers {
     Mockito.verify(mockFtpClient, Mockito.times(1)).enterLocalPassiveMode
     Mockito.verify(mockFtpClient, Mockito.times(1)).listFiles(testDir)
     Mockito.verify(mockFtpClient).setFileType(BINARY_FILE_TYPE)
-    Mockito.verify(mockFtpClient).setControlKeepAliveTimeout(300)
+    //Mockito.verify(mockFtpClient).setControlKeepAliveTimeout(300)
     Mockito.verify(mockFtpClient, Mockito.times(1)).logout()
     Mockito.verify(mockFtpClient, Mockito.times(1)).disconnect()
     
@@ -155,7 +155,7 @@ class EdgarModuleTestSuite extends FunSuite  with Matchers {
     Mockito.verify(mockFtpClient, Mockito.times(1)).logout()
     Mockito.verify(mockFtpClient, Mockito.times(1)).disconnect()
     Mockito.verify(mockFtpClient).setFileType(BINARY_FILE_TYPE)
-    Mockito.verify(mockFtpClient).setControlKeepAliveTimeout(300)
+    //Mockito.verify(mockFtpClient).setControlKeepAliveTimeout(300)
     
     Mockito.verify(mockInputStream, Mockito.times(1)).available()
     

@@ -9,7 +9,7 @@ import org.apache.commons.io.IOUtils
 import edgar.util.LogHelper
 
 class ApacheFTPClientImpl(_username: String, _password: String, _host: String) extends ApacheFTPClient with LogHelper {
-  val ftpConfig = new FtpConfig {
+    val ftpConfig = new FtpConfig {
     val username = _username
     val password = _password
     val host = _host

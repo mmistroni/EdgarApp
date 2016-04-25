@@ -39,7 +39,7 @@ trait ApacheFTPClient extends FtpClient {
     ftpClient.enterLocalPassiveMode
     ftpClient.setFileType(BINARY_FILE_TYPE)
     ftpClient.setRemoteVerificationEnabled(false)
-    ftpClient.setControlKeepAliveTimeout(300)
+    //ftpClient.setControlKeepAliveTimeout(300)
   }
 
   protected def execute[T](op: FTPClient => T): T = {
