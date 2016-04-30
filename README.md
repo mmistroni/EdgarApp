@@ -19,6 +19,24 @@ In order to do that you will need to provide the following system properties:
 -Dsmtp.password = password for the smtp host
 -Dsmtp.recipients = recipients of the email (comma separated address)
 
+Example command line:
+
+scala -Dsmtp.host=<yoursmpthost> 
+      -Dsmtp.port=<yoursmtpport>
+      -Dsmtp.username=<smtp username> 
+      -Dsmtp.password=<smtppassword> 
+      -Dsmtp.recipients=<comma separated email addresses>
+      target\scala-2.11\edgarretriever.jar
+
+
+
+
+Alternatively, you can run an Example application which will download (and display) a bunch of Form4 filings and display it to output.
+To run the exampleApp simply type
+
+       scala -cp target\scala-2.11\edgarretriever.jar examples.ExampleApp
+
+
 
 
 EdgarActorRunner launch few actors in order to do its processing.
