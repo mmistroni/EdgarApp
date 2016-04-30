@@ -23,8 +23,9 @@ trait CommonsNetEmailSender extends LogHelper {
   }
 
   def sendMail(subject: String, content: String, recipients: String*): Unit = {
+    logger.info("EMail sender, sending email to:" + recipients)
+    
     val msg = buildEmail(subject, content, recipients: _*)
-    logger.info("sending email...")
     logger.info(msg.getToAddresses)
     msg.send();
   }

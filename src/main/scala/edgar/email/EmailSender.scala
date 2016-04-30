@@ -25,6 +25,7 @@ trait EmailSender extends LogHelper{
     
     def buildMessage(subject:String, content:String, recipients:Seq[String]):Message = {
       val mimeMessage = _createMimeMessage
+      logger.info("REcipiients are:\n" + recipients.mkString(" "))
       mimeMessage.addFrom(createAddresses(List(mailConfigProperties.fromAddress)))
       mimeMessage.setSubject(subject)
       mimeMessage.setContent(content, "text/html");

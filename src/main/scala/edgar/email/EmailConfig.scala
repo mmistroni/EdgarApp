@@ -9,13 +9,12 @@ trait EmailConfig extends FtpConfig {
     
     def toProperties = {
       val mailProps = new Properties()
-      mailProps.put("mail.smtp.host", this.host)//"smtp.gmail.com");
-      mailProps.put("mail.smtp.port", String.valueOf(this.port))//"587");
+      mailProps.put("mail.smtp.host", this.host)
+      mailProps.put("mail.smtp.port", String.valueOf(this.port))
       mailProps.put("mail.smtp.auth", "true");
       mailProps.put("mail.smtp.starttls.enable", "true");
       mailProps.put("mail.smtp.user", this.username);
       mailProps.put("mail.smtp.password", this.password)//"80t5w4n4;");
-      mailProps.put("mail.debug", "true")
       mailProps
     }
     

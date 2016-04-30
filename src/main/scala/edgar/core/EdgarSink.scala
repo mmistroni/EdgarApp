@@ -57,7 +57,7 @@ trait OutputStreamSink extends EdgarSink with LogHelper {
     logger.info("We hsould send all informations we have collected..")
     for ((k, v) <- messageMap) {
       val securities = v.mkString(",")
-      logger.info(s"Securities Held by [$k]:\n $securities")
+      logger.debug(s"Securities Held by [$k]:\n $securities")
     }
     
   }

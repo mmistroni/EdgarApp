@@ -10,7 +10,8 @@ import edgar.core._
 import edgar.email._
 import edgar.predicates.EdgarPredicates.or
 import java.util.UUID
-
+import com.typesafe.config._
+    
 object EdgarActorRunner extends App with edgar.util.LogHelper {
 
   logger.info("Starting the Actor System....")
@@ -27,17 +28,14 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
   }
   
   
-  def launchActorSystem = {
+  def launchActorSystem(conf:Config) = {
     
-    import com.typesafe.config.ConfigFactory
-    // load sys properties required for email sink
-    val conf = ConfigFactory.load()
-
+    
     val system = ActorSystem("Edgar-Filings-Downloader")
     val downloader =
       system.actorOf(Props(classOf[DownloadManager], 3, factory), "DownloadManager")
      
-    
+      
     val config = new EmailConfig {
       override val username = conf.getString("smtp.username")
       override val password = conf.getString("smtp.password")
@@ -45,6 +43,14 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
       override val port = conf.getInt("smtp.port")
       override val fromAddress  = "noreply@worlcorpservices.com"
     }  
+    
+    
+    println("Starting Actor system. Email properties are:" + config.toProperties)
+    println("Recipients:" + conf.getString("smtp.recipients"))
+      
+    
+    
+    
     
     val emailSink = new OutputStreamSink with CommonsNetEmailSender {
       override val mailConfigProperties = config
@@ -55,9 +61,10 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
         super.emptySink
         logger.info("And now displaying mail properties..")
         logger.info(mailConfigProperties.toProperties)
-        logger.info("Sending Content..")
+        logger.info("Sending Content to:" + conf.getString("smtp.recipients"))
         val content = generateHtmlTable(this.securitesMap)
-        this.sendMail("Edgar Institutional Investor Securities", conf.getString("smtp.recipients"))
+        
+        sendMail("Edgar Institutional Investor Securities", content, conf.getString("smtp.recipients"))
       }
     }
       
@@ -83,7 +90,12 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
     master ! Start
   }
   
-  launchActorSystem
+  // load sys properties required for email sink
+  val conf = ConfigFactory.load()
+  
+  
+  
+  launchActorSystem(conf)
   
 
 }
