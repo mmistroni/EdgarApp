@@ -1,0 +1,8 @@
+assembly
+exit
+import com.typesafe.config.ConfigFactory
+scala
+quit()
+exit()
+:q
+exit

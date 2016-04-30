@@ -9,9 +9,17 @@ The application does the following:
 - output its XML Content
 
 By default the jar that you build with sbt assembly will kick off src/main/scala/EdgarActorRunner which will try
-to download filing informations filtering on 
-- cik (("886982", "19617", "1067983"))     // GS, JPM. BRKB, all kind of filings
-- form type (13F-HR, which is institutional investors filing)
+to download filing informations filtering on form type (13F-HR, which is institutional investors filing).
+At the end of the processing the code will send an email containing shares held by major institutional investors.
+In order to do that you will need to provide the following system properties:
+ to send an email with e :
+-Dsmtp.host  = smtp host name you want to use to send email
+-Dsmtp.port  = smtp port 
+-Dsmtp.username = username for connecting to smtp host
+-Dsmtp.password = password for the smtp host
+-Dsmtp.recipients = recipients of the email (comma separated address)
+
+
 
 EdgarActorRunner launch few actors in order to do its processing.
 There's also an example code using Futures (src.main.scala.EdgarFutureRunner), and a standalone example in

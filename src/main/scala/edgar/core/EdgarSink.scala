@@ -10,10 +10,10 @@ trait EdgarSink {
 
   def emptySink()
 }
+
 trait OutputStreamSink extends EdgarSink with LogHelper {
   private val messageMap = scala.collection.mutable.Map[String, Seq[String]]()
 
-  
   def securitesMap = messageMap
   
   def storeFileContent(fileContent: EdgarTypes.SimpleFiling) = {

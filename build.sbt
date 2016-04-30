@@ -8,9 +8,19 @@ version := "1.0"
 
 scalaVersion := "2.11.7"
 
+assembleArtifact in packageScala := true
+assembleArtifact in packageDependency := true
 assemblyJarName in assembly := "edgarretriever.jar"
 
-mainClass in assembly :=   Some("edgar.spark.EdgarSparkDownloader")//Some("EdgarActorRunner")
+mainClass in assembly :=   Some("EdgarActorRunner")
+
+assemblyMergeStrategy in assembly := {
+  case PathList("javax", "mail", xs @ _*)         => MergeStrategy.first
+  case PathList("com", "sun", xs @ _*)         => MergeStrategy.first
+  case x =>
+    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    oldStrategy(x)
+}
 
 // Add a single dependency
 libraryDependencies += "junit" % "junit" % "4.8" % "test"
@@ -28,15 +38,12 @@ libraryDependencies += "org.mockito" % "mockito-core" % "1.9.5"
 libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.5",
                             "org.slf4j" % "slf4j-simple" % "1.7.5",
                             "org.clapper" %% "grizzled-slf4j" % "1.0.2")
-libraryDependencies += "me.lessis" %% "courier" % "0.1.3"
 libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4"
-libraryDependencies += "javax.activation" % "activation" % "1.1.1"
-libraryDependencies += "javax.mail" % "mail" % "1.4.7"
 libraryDependencies += "org.apache.commons" % "commons-email" % "1.4"
 libraryDependencies += "org.powermock" % "powermock-mockito-release-full" % "1.5.4" % "test"
 libraryDependencies += "org.apache.spark" %% "spark-core"   % "1.6.1" % "provided"
 libraryDependencies += "org.apache.spark" %% "spark-streaming"   % "1.6.1" % "provided"
 libraryDependencies += "org.apache.spark" %% "spark-mllib"   % "1.6.1"  % "provided"
-
+libraryDependencies += "com.typesafe" % "config" % "1.2.1"
 resolvers += "softprops-maven" at "http://dl.bintray.com/content/softprops/maven"
 

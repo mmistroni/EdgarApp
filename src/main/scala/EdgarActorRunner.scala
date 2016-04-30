@@ -29,16 +29,20 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
   
   def launchActorSystem = {
     
+    import com.typesafe.config.ConfigFactory
+    // load sys properties required for email sink
+    val conf = ConfigFactory.load()
+
     val system = ActorSystem("Edgar-Filings-Downloader")
     val downloader =
       system.actorOf(Props(classOf[DownloadManager], 3, factory), "DownloadManager")
      
     
     val config = new EmailConfig {
-      override val username = sys.env.get("smtp.username").get
-      override val password = sys.env.get("smtp.password").get
-      override val host = sys.env.get("smtp.host").get
-      override val port = sys.env.get("smtp.port").get.toInt
+      override val username = conf.getString("smtp.username")
+      override val password = conf.getString("smtp.password")
+      override val host = conf.getString("smtp.host")
+      override val port = conf.getInt("smtp.port")
       override val fromAddress  = "noreply@worlcorpservices.com"
     }  
     
@@ -53,7 +57,7 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
         logger.info(mailConfigProperties.toProperties)
         logger.info("Sending Content..")
         val content = generateHtmlTable(this.securitesMap)
-        this.sendMail("Edgar Institutional Investor Securities", content, sys.env.get("smtp.recipients").get)
+        this.sendMail("Edgar Institutional Investor Securities", conf.getString("smtp.recipients"))
       }
     }
       
@@ -79,25 +83,7 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
     master ! Start
   }
   
-  val environmentVar = sys.env
+  launchActorSystem
   
-  println("Checking basic properties have been configured")
-  val environmentProperties = sys.env
-  val requiredProperties  = List("smtp.host", "smtp.username", "smtp.password",
-                              "smtp.port", "smtp.recipients")
-  val allPropertiesConfigured= requiredProperties.forall { prop => environmentProperties.keySet.contains(prop) }
-  
-  println("Smpt host=" + sys.env.get("smtp.host"))
-  println("username=" + sys.env.get("smtp.username"))
-  println("Password=" + sys.env.get("smtp.password"))
-  println("Port=" + sys.env.get("smtp.port"))
-  println("Recipients" + sys.env.get("smtp.recipients"))
-  if (!allPropertiesConfigured) {
-    println("Not all properties have been configured... exiting")
-    System.exit(0)
-  } else {
-    println("Launching Actor System...")
-    launchActorSystem
-  }
 
 }

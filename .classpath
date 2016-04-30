@@ -17,12 +17,10 @@
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.slf4j\slf4j-simple\jars\slf4j-simple-1.7.5.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.clapper\grizzled-slf4j_2.11\jars\grizzled-slf4j_2.11-1.0.2.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\Scala\activator-dist-1.3.7\repository\org.slf4j\slf4j-api\1.7.7\jars\slf4j-api.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\me.lessis\courier_2.11\jars\courier_2.11-0.1.3.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\javax.mail\mail\jars\mail-1.4.7.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\javax.activation\activation\jars\activation-1.1.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scala-lang.modules\scala-parser-combinators_2.11\bundles\scala-parser-combinators_2.11-1.0.4.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.commons\commons-email\jars\commons-email-1.4.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.sun.mail\javax.mail\jars\javax.mail-1.5.2.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\javax.activation\activation\jars\activation-1.1.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scalamock\scalamock-core_2.11\jars\scalamock-core_2.11-3.2.2.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scalamock\scalamock-scalatest-support_2.11\jars\scalamock-scalatest-support_2.11-3.2.2.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scalatest\scalatest_2.11\bundles\scalatest_2.11-2.2.4.jar"/>

@@ -2,6 +2,7 @@
 
 package edgar.email
 
+/**
 import courier.Mailer
 import courier.Text
 import courier.addr
@@ -30,3 +31,4 @@ object MailerApp extends App{
     println("Out of here")
     Thread.sleep(5000)
 }
+**/
