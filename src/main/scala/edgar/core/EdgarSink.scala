@@ -35,7 +35,7 @@ trait OutputStreamSink extends EdgarSink with LogHelper {
       val purchasedShares = infoTableXml \\ "nameOfIssuer"
       val holdingSecurities = infoTableXml \\ "nameOfIssuer"
       holdingSecurities.foreach(iss => logger.debug(iss.text))
-      messageMap += (filingManager.text -> holdingSecurities.map(_.text).distinct)
+      messageMap += (filingManager.text -> holdingSecurities.map(_.text.toUpperCase()).distinct)
       
 
     } else if (fileContent.indexOf("<?xml version") >= 0) {

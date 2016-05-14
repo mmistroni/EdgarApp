@@ -35,8 +35,8 @@ trait EmailSender extends LogHelper{
       
     }
     
-    def sendMail(subject: String, content: String, recipients: (String)*): Unit = {
-      val msg = buildMessage(subject, content, recipients)
+    def sendMail(subject: String, content: String, recipients: String): Unit = {
+      val msg = buildMessage(subject, content, List(recipients))
       logger.info("sending email...")
       logger.info(msg.getRecipients(Message.RecipientType.TO))
       send(msg)

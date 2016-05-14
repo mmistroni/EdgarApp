@@ -65,15 +65,17 @@ class ChildDownloader(ftpClient: FtpClient) extends Actor {
 
     override val supervisorStrategy =
       OneForOneStrategy(
-        maxNrOfRetries = 20, withinTimeRange = 2 seconds) {
+        maxNrOfRetries = 5, withinTimeRange = 30 seconds) {
           case jns: java.lang.Exception =>
             val originalMessage = workItems.get(sender).get
             log.info(s"Error while Downloading ${originalMessage}: $jns")
             workItems.remove(sender)
             // creating new sender
-            downloaders.enqueue(sender)
-            log.info("Enqueuing Sender")
+            log.info(s"Killing Sender..")
             
+            sender ! PoisonPill
+            downloaders.enqueue(createActor("Replacement"))
+            log.info("Enqueuing Sender")
             pendingWork.enqueue(originalMessage)
             Restart // something went wrong. restarting actors
           case _ =>

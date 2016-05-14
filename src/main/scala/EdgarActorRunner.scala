@@ -48,13 +48,10 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
     println("Starting Actor system. Email properties are:" + config.toProperties)
     println("Recipients:" + conf.getString("smtp.recipients"))
       
-    
-    
-    
-    
     val emailSink = new OutputStreamSink with CommonsNetEmailSender {
       override val mailConfigProperties = config
       import edgar.util.HtmlTableGenerator._
+      
       
       override def emptySink = {
         logger.info("MyEmailSink. calling super empty sink")

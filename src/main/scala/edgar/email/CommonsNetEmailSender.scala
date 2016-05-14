@@ -8,7 +8,7 @@ trait CommonsNetEmailSender extends LogHelper {
 
   def createEmail = new HtmlEmail()
 
-  def buildEmail(subject: String, content: String, recipients: String*) = {
+  def buildEmail(subject: String, content: String, recipients: String) = {
     val email = createEmail
     email.setHostName(mailConfigProperties.host);
     email.setSmtpPort(mailConfigProperties.port);
@@ -19,13 +19,15 @@ trait CommonsNetEmailSender extends LogHelper {
     email.setFrom(mailConfigProperties.fromAddress)
     email.setSubject(subject)
     email.setHtmlMsg(content)
-    email.addTo(recipients: _*)
+    val allRecipients:Array[String] = recipients.split(",")
+    logger.info("Sending mail to " + allRecipients.mkString(":"))
+    email.addTo(allRecipients: _*)
   }
 
-  def sendMail(subject: String, content: String, recipients: String*): Unit = {
+  def sendMail(subject: String, content: String, recipients: String): Unit = {
     logger.info("EMail sender, sending email to:" + recipients)
     
-    val msg = buildEmail(subject, content, recipients: _*)
+    val msg = buildEmail(subject, content, recipients)
     logger.info(msg.getToAddresses)
     msg.send();
   }
