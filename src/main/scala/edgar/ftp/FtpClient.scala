@@ -5,4 +5,5 @@ trait FtpClient {
   def listDirectory(dirName: String): List[String]
   def retrieveFile(fileName: String): String
   def retrieveZippedStream(fileName: String): List[(String, String)]
+  def disconnect:Unit
 }

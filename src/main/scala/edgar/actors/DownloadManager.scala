@@ -35,14 +35,23 @@ class ChildDownloader(ftpClient: FtpClient) extends Actor {
     def receive = {
 
       case Download(filePath: String, origin) => {
-        if (filePath.endsWith(".zip")) {
-          log.info("Extracting XBRL ifle....")
-          val content = ftpClient.retrieveZippedStream(filePath)
-
-          sender ! XBRLLoadFinished(content, origin)
-        } else {
-          val fileContent = ftpClient.retrieveFile(filePath)
-          sender ! SimpleFilingFinished(fileContent, origin)
+        try {
+          if (filePath.endsWith(".zip")) {
+            log.info("Extracting XBRL ifle....")
+            val content = ftpClient.retrieveZippedStream(filePath)
+  
+            sender ! XBRLLoadFinished(content, origin)
+          } else {
+            val fileContent = ftpClient.retrieveFile(filePath)
+            sender ! SimpleFilingFinished(fileContent, origin)
+          }
+        } catch {
+          case e:Exception => {
+            log.info("Exception in downloading filePath. disconnecting client");
+            ftpClient.disconnect
+            throw e
+          }
+          
         }
 
       }
@@ -72,11 +81,11 @@ class ChildDownloader(ftpClient: FtpClient) extends Actor {
             workItems.remove(sender)
             // creating new sender
             log.info(s"Killing Sender..")
+            log.info("Enqueuing Original message")
+            pendingWork.enqueue(originalMessage)
             
             sender ! PoisonPill
             downloaders.enqueue(createActor("Replacement"))
-            log.info("Enqueuing Sender")
-            pendingWork.enqueue(originalMessage)
             Restart // something went wrong. restarting actors
           case _ =>
             Escalate

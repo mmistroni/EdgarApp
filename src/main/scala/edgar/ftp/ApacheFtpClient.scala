@@ -37,14 +37,18 @@ trait ApacheFTPClient extends FtpClient {
     ftpClient.connect(ftpConfig.host)
     ftpClient.login(ftpConfig.username, ftpConfig.password)
     ftpClient.enterLocalPassiveMode
-    ftpClient.setFileType(BINARY_FILE_TYPE)
-    ftpClient.setRemoteVerificationEnabled(false)
+    //ftpClient.setFileType(BINARY_FILE_TYPE)
+    //ftpClient.setRemoteVerificationEnabled(false)
     //ftpClient.setControlKeepAliveTimeout(300)
   }
 
+  def connected: Boolean = ftpClient.isConnected
+
   protected def execute[T](op: FTPClient => T): T = {
     try {
-      connect()
+      if (!ftpClient.isConnected) {
+        connect()
+      }
       op(ftpClient)
     } finally {
       disconnect()
@@ -104,10 +108,10 @@ trait ApacheFTPClient extends FtpClient {
     }
   }
 
-  private def disconnect() = {
-    try {
-      ftpClient.logout()
-    } finally {
+  def disconnect() = {
+    //try {
+    //  ftpClient.logout()
+    //} finally {
       try {
         ftpClient.disconnect()
 
@@ -116,7 +120,7 @@ trait ApacheFTPClient extends FtpClient {
       }
       // do nothing
 
-    }
+    //}
   }
 
 }

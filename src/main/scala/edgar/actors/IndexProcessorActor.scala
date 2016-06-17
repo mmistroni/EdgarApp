@@ -18,7 +18,8 @@ class IndexProcessorActor(indexProcessor: IndexProcessor, edgarFileManager: Acto
         val arrList = indexProcessor.processIndexFile(fileContent)
         log.debug("Sending msg with:" + arrList.size + " elements")
         if (arrList.isEmpty) {
-          context stop self
+          log.info("No filing found. shutting down....")
+          context.system.shutdown()
         } else {
           edgarFileManager ! EdgarRequests.FilteredFiles(arrList.toList)
         }

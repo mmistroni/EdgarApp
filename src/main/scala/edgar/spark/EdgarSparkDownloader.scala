@@ -2,6 +2,7 @@ package edgar.spark
 
 import edgar.ftp._
 import edgar.core._
+import scala.xml._
 
 import org.apache.spark._
 
@@ -14,8 +15,14 @@ import org.apache.spark._
  * At the  moment what this do is retrieve Edgar Filing as a String and display it to output
  * Run this module like this:
  * 
+ * spark-submit --class edgar.spark.EdgarSparkDownloader <path to jar file>
+ * 
  * 
  */
+
+case class Form4Filing(issuerName:String, issuerCik:String, reportingOwnerCik:String,
+                       transactionCode:String)
+    
 object EdgarSparkDownloader {
   
   def downloadFtpFile(fileName:String):String = {
@@ -24,20 +31,37 @@ object EdgarSparkDownloader {
     ftpClient.retrieveFile(fileName)
   }
   
+  def parseXmlFile(fileContent:String):Form4Filing = {
+   val content = fileContent.substring(fileContent.indexOf("?>") + 2, fileContent.indexOf("</XML"))
+   val xml = XML.loadString(content)
+      val formType = xml \\ "submissionType"
+      val issuerName = xml \\ "issuerName"
+      val issuerCik = xml \\ "issuerCik"
+      val reportingOwnerCik = xml \\ "rptOwnerCik"
+      val transactionCode = xml \\ "transactionCode"
+      Form4Filing(issuerName.text, issuerCik.text, reportingOwnerCik.text, transactionCode.text) 
+  }
   
   def processFiles():Unit = {
     val conf = new SparkConf().setAppName("Simple Application")
     val sc = new SparkContext(conf)
-    val lines = sc.textFile("file:///c:/Users/marco/testsbtproject/sample.master.idx", 5)
+    val lines = sc.textFile("file:///c:/Users/marco/testsbtproject/masterq2.gz", 5)
     
-    val filtered = lines.map(l => l.split('|')).filter(arr=> arr.length > 2).map(arr => arr(4)).zipWithIndex
+    val filtered = lines.map(l => l.split('|')).filter(arr=> arr.length > 2).map(arr => (arr(2), arr(4))).zipWithIndex
 
-    val noHeaders = filtered.filter( tpl => tpl._2 > 0).map(tpl => tpl._1)
+    val noHeaders = filtered.filter( tpl => tpl._2 > 0).map(tpl => tpl._1).filter(tpl => tpl._1 == "4").map(_._2)
     
     noHeaders.take(10).foreach(println)
     
+    noHeaders.cache()
     println("Now Fetching.....")
-    val mapped = noHeaders.take(10).map(fileName => downloadFtpFile(fileName)).foreach(println)
+    val fin = noHeaders.map(fileName => downloadFtpFile(fileName)).map(parseXmlFile)
+    fin.cache()
+    
+    //println("Finidng who bought shares")
+    //fin.filter(form4=> form4.transactionCode.trim().equals("A")).foreach(println)
+    println("Finding who bought shars in own company")
+    println(fin.filter(form4=> form4.issuerCik.trim().equals(form4.reportingOwnerCik.trim())).count())
     
     
   }

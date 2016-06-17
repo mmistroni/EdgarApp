@@ -12,6 +12,10 @@ import edgar.predicates.EdgarPredicates.or
 import java.util.UUID
 import com.typesafe.config._
     
+
+
+
+
 object EdgarActorRunner extends App with edgar.util.LogHelper {
 
   logger.info("Starting the Actor System....")
@@ -20,11 +24,12 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
     
   def createFilterFunction():EdgarFilter = {
     val cikFilter = cikIn(Set("886982", "19617", "1067983"))     // GS, JPM. BRKB)
-    val includeFormTypesFilter = formTypeIn(Set("13F-HR"))
+    val includeFormTypesFilter = formTypeIn(Set("4"))
     val excludeFormTypesFilter = excludeFormTypes(List("424B2", "8-K"))
     val sameCikFilter  = and(Seq(cikFilter, excludeFormTypesFilter))_
     //or(Seq(sameCikFilter, includeFormTypesFilter ))_
     includeFormTypesFilter
+    
   }
   
   
@@ -84,6 +89,14 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
       indexProcessor,
       edgarFileManager), "Master")
 
+    println("Scheduling timeout...")
+    import scala.concurrent.duration.Duration;
+    import java.util.concurrent.TimeUnit;
+    // Creating Timer
+    system.scheduler.scheduleOnce(
+        Duration.create(3, TimeUnit.HOURS), 
+        edgarFileSink, Terminated)( system.dispatcher)
+      
     master ! Start
   }
   
