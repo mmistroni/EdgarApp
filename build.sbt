@@ -6,7 +6,7 @@ name := "EdgarRetriever"
 // All other initialization methods are implemented in terms of these.
 version := "1.0"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.5"
 
 assembleArtifact in packageScala := true
 assembleArtifact in packageDependency := true

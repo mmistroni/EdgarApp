@@ -16,7 +16,7 @@ import com.typesafe.config._
 
 
 
-object EdgarActorRunner extends App with edgar.util.LogHelper {
+object EdgarFtpRetriever extends App with edgar.util.LogHelper {
 
   logger.info("Starting the Actor System....")
   val filterFunction = formType2In(Seq("13F-HR"))
@@ -38,7 +38,7 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
     
     val system = ActorSystem("Edgar-Filings-Downloader")
     val downloader =
-      system.actorOf(Props(classOf[DownloadManager], 3, factory), "DownloadManager")
+      system.actorOf(Props(classOf[DownloadManager], 2, factory), "DownloadManager")
      
       
     val config = new EmailConfig {

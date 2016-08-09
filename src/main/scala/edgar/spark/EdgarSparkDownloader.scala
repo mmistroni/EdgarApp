@@ -31,7 +31,7 @@ object EdgarSparkDownloader {
     ftpClient.retrieveFile(fileName)
   }
   
-  def parseXmlFile(fileContent:String):Form4Filing = {
+  def parseXmlFile(fileContent:String) = {
    val content = fileContent.substring(fileContent.indexOf("?>") + 2, fileContent.indexOf("</XML"))
    val xml = XML.loadString(content)
       val formType = xml \\ "submissionType"
@@ -39,29 +39,44 @@ object EdgarSparkDownloader {
       val issuerCik = xml \\ "issuerCik"
       val reportingOwnerCik = xml \\ "rptOwnerCik"
       val transactionCode = xml \\ "transactionCode"
-      Form4Filing(issuerName.text, issuerCik.text, reportingOwnerCik.text, transactionCode.text) 
+         Form4Filing(issuerName.text, issuerCik.text, reportingOwnerCik.text, transactionCode.text)
   }
   
   def processFiles():Unit = {
     val conf = new SparkConf().setAppName("Simple Application")
     val sc = new SparkContext(conf)
-    val lines = sc.textFile("file:///c:/Users/marco/testsbtproject/masterq2.gz", 5)
+    val lines = sc.textFile("file:///c:/Users/marco/testsbtproject/masterq3.gz", 2)
     
-    val filtered = lines.map(l => l.split('|')).filter(arr=> arr.length > 2).map(arr => (arr(2), arr(4))).zipWithIndex
+    // cik|xxx
+    val filtered = lines.map(l => l.split('|')).filter(arr=> arr.length > 2).map(arr => (arr(0),arr(2), arr(4))).zipWithIndex
 
-    val noHeaders = filtered.filter( tpl => tpl._2 > 0).map(tpl => tpl._1).filter(tpl => tpl._1 == "4").map(_._2)
-    
-    noHeaders.take(10).foreach(println)
+    val noHeaders = filtered.filter( tpl => tpl._2 > 0).map(tpl => tpl._1).filter(tpl => tpl._2 == "4").map(tpl => tpl._3)
     
     noHeaders.cache()
-    println("Now Fetching.....")
-    val fin = noHeaders.map(fileName => downloadFtpFile(fileName)).map(parseXmlFile)
-    fin.cache()
+    println("Now Reducing..." +  noHeaders.count())
+    noHeaders.take(15).foreach(println)
+    println("Now downloading..." + noHeaders.count())
+    val fin = noHeaders.map(fileName => downloadFtpFile(fileName)).map(parseXmlFile) // form.reportingOwnerCik, form.transactionCode))
+    fin.foreach(println)
+    
+    
+    
+    // alternative. First find out the top 100 companies with filing, then filter the original data and download
+    
+    //fin.cache()
+    //
+    //val reduced = fin.reduceByKey((ftpFile1, ftpFile2) =>  ftpFile1 + "|" + ftpFile2)
+    
+    //val ordered = reduced.sortBy(tpl => tpl._2, false)
+    
+    //ordered.foreach(println)
+    //reduced.take(20).foreach(println)
+    
     
     //println("Finidng who bought shares")
     //fin.filter(form4=> form4.transactionCode.trim().equals("A")).foreach(println)
     println("Finding who bought shars in own company")
-    println(fin.filter(form4=> form4.issuerCik.trim().equals(form4.reportingOwnerCik.trim())).count())
+    //println(fin.filter(form4=> form4.issuerCik.trim().equals(form4.reportingOwnerCik.trim())).count())
     
     
   }
