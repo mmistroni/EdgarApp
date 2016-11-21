@@ -11,11 +11,8 @@ import edgar.email._
 import edgar.predicates.EdgarPredicates.or
 import java.util.UUID
 import com.typesafe.config._
+import amazon.util.AWSClientFactory
     
-
-
-
-
 object EdgarActorRunner extends App with edgar.util.LogHelper {
 
   logger.info("Starting the Actor System....")
@@ -49,39 +46,11 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
       override val fromAddress  = "noreply@worlcorpservices.com"
     }  
     
-    
     println("Starting Actor system. Email properties are:" + config.toProperties)
     println("Recipients:" + conf.getString("smtp.recipients"))
       
-    val emailSink = new OutputStreamSink with CommonsNetEmailSender {
-      override val mailConfigProperties = config
-      import edgar.util.HtmlTableGenerator._
-      
-      
-      override def emptySink = {
-        logger.info("MyEmailSink. calling super empty sink")
-        super.emptySink
-        logger.info("And now displaying mail properties..")
-        logger.info(mailConfigProperties.toProperties)
-        logger.info("Sending Content to:" + conf.getString("smtp.recipients"))
-        val content = generateHtmlTable(this.securitesMap)
-        
-        sendMail("Edgar Institutional Investor Securities", content, conf.getString("smtp.recipients"))
-        
-        storeSecuritiesFile
-      }
-      
-      def storeSecuritiesFile = {
-        import java.text._
-        val fileTimestamp = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date())
-        val pw = new java.io.PrintWriter(new java.io.File(s"data/$fileTimestamp-securites.txt"))
-        val securitiesString = securitesMap.values.flatten.mkString("\n")
-        pw.write(securitiesString)
-        pw.close()
-      }
-      
-    }
-      
+    val emailSink = new S3Sink(config, conf)
+    
     val edgarFileSink = system.actorOf(Props(classOf[EdgarFileSinkActor], 
         emailSink
         ), "EdgarFileSink")

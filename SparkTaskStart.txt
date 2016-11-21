@@ -1,0 +1,21 @@
+scala> val ds = sc.textFile("file:///c:/Users/marco/MarketSectorGauge/2016-07-21-securites.txt")
+ds: org.apache.spark.rdd.RDD[String] = file:///c:/Users/marco/MarketSectorGauge/2016-07-21-securites.txt MapPartitionsRDD[6] at textFile at <console>:27
+
+scala> ds.count()
+res1: Long = 6308
+
+scala> val reduced = ds.map(w => (w,1)).reduceByKey((first, second) => first + second)
+reduced: org.apache.spark.rdd.RDD[(String, Int)] = ShuffledRDD[8] at reduceByKey at <console>:29
+
+
+cala> reduced.sortBy(tpl => tpl._2, false)
+res5: org.apache.spark.rdd.RDD[(String, Int)] = MapPartitionsRDD[13] at sortBy at <console>:32
+
+scala> reduced.sortBy(tpl => tpl._2, false).take(5)
+res6: Array[(String, Int)] = Array((JOHNSON & JOHNSON,25), (PROCTER & GAMBLE CO,19), (MICROSOFT CORP,18), (HOME DEPOT INC,18), (EXXON MOBIL CORP,18))
+
+
+// alternatively
+
+scala> reduced.takeOrdered(10)(Ordering[Int].reverse.on(tpl => tpl._2))
+res8: Array[(String, Int)] = Array((JOHNSON & JOHNSON,25), (PROCTER & GAMBLE CO,19), (MICROSOFT CORP,18), (EXXON MOBIL CORP,18), (HOME DEPOT INC,18), (PFIZER INC,17), (PEPSICO INC,16), (ABBVIE INC,16), (INTEL CORP,15), (CONOCOPHILLIPS,15)

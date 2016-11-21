@@ -39,7 +39,8 @@ object EdgarSparkDownloader {
       val issuerCik = xml \\ "issuerCik"
       val reportingOwnerCik = xml \\ "rptOwnerCik"
       val transactionCode = xml \\ "transactionCode"
-         Form4Filing(issuerName.text, issuerCik.text, reportingOwnerCik.text, transactionCode.text)
+          (reportingOwnerCik.text, transactionCode.text)
+         //Form4Filing(issuerName.text, issuerCik.text, reportingOwnerCik.text, transactionCode.text)
   }
   
   def processFiles():Unit = {
@@ -56,27 +57,20 @@ object EdgarSparkDownloader {
     println("Now Reducing..." +  noHeaders.count())
     noHeaders.take(15).foreach(println)
     println("Now downloading..." + noHeaders.count())
-    val fin = noHeaders.map(fileName => downloadFtpFile(fileName)).map(parseXmlFile) // form.reportingOwnerCik, form.transactionCode))
-    fin.foreach(println)
+    val fin = noHeaders.map(fileName => downloadFtpFile(fileName)).map(parseXmlFile) 
+    
+    // Does not work///
+    //val buffer = new StringBuffer()
+    
+    //fin.foreach(tpl=>buffer.append(tpl.toString))
+    fin.saveAsTextFile("all_data.txt")
+    //fin.foreach(println)
     
     
+    println("Exiting..")
+    //val reduced = fin.reduceByKey((transCode1, transCode2) => transCode1 + transCode2)
+    //reduced.foreach(println)
     
-    // alternative. First find out the top 100 companies with filing, then filter the original data and download
-    
-    //fin.cache()
-    //
-    //val reduced = fin.reduceByKey((ftpFile1, ftpFile2) =>  ftpFile1 + "|" + ftpFile2)
-    
-    //val ordered = reduced.sortBy(tpl => tpl._2, false)
-    
-    //ordered.foreach(println)
-    //reduced.take(20).foreach(println)
-    
-    
-    //println("Finidng who bought shares")
-    //fin.filter(form4=> form4.transactionCode.trim().equals("A")).foreach(println)
-    println("Finding who bought shars in own company")
-    //println(fin.filter(form4=> form4.issuerCik.trim().equals(form4.reportingOwnerCik.trim())).count())
     
     
   }

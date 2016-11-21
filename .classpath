@@ -5,53 +5,123 @@
   <classpathentry output="target\scala-2.11\test-classes" kind="src" path="src\test\scala-2.11"/>
   <classpathentry output="target\scala-2.11\test-classes" kind="src" path="src\test\scala"/>
   <classpathentry output="target\scala-2.11\test-classes" kind="src" path="src\test\java"/>
-  <classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.netflix.rxjava\rxjava-scala\jars\rxjava-scala-0.19.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.netflix.rxjava\rxjava-core\jars\rxjava-core-0.19.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scala-lang\scala-swing\jars\scala-swing-2.11.0-M7.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\commons-io\commons-io\jars\commons-io-2.4.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\commons-io\commons-io\2.4\jars\commons-io.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scala-lang.modules\scala-xml_2.11\bundles\scala-xml_2.11-1.0.5.jar"/>
+  <classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\commons-net\commons-net\jars\commons-net-3.4.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.typesafe\config\bundles\config-1.2.1.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.mockito\mockito-core\jars\mockito-core-1.9.5.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.mockito\mockito-core\1.9.5\jars\mockito-core.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.slf4j\slf4j-simple\jars\slf4j-simple-1.7.5.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.clapper\grizzled-slf4j_2.11\jars\grizzled-slf4j_2.11-1.0.2.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\Scala\activator-dist-1.3.7\repository\org.slf4j\slf4j-api\1.7.7\jars\slf4j-api.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scala-lang.modules\scala-parser-combinators_2.11\bundles\scala-parser-combinators_2.11-1.0.4.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.slf4j\slf4j-api\1.7.7\jars\slf4j-api.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.scala-lang.modules\scala-parser-combinators_2.11\1.0.4\bundles\scala-parser-combinators_2.11.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.commons\commons-email\jars\commons-email-1.4.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.sun.mail\javax.mail\jars\javax.mail-1.5.2.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\javax.activation\activation\jars\activation-1.1.1.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\local\com.mm\sparkutilities_2.11\1.0\jars\sparkutilities_2.11.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk\jars\aws-java-sdk-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-support\jars\aws-java-sdk-support-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-core\jars\aws-java-sdk-core-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\commons-logging\commons-logging\1.1.3\jars\commons-logging.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.httpcomponents\httpclient\jars\httpclient-4.3.6.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.httpcomponents\httpcore\jars\httpcore-4.3.3.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\commons-codec\commons-codec\1.6\jars\commons-codec.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.fasterxml.jackson.core\jackson-databind\bundles\jackson-databind-2.5.3.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.fasterxml.jackson.core\jackson-annotations\bundles\jackson-annotations-2.5.0.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.fasterxml.jackson.core\jackson-core\bundles\jackson-core-2.5.3.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\joda-time\joda-time\2.8.1\jars\joda-time.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-simpledb\jars\aws-java-sdk-simpledb-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-simpleworkflow\jars\aws-java-sdk-simpleworkflow-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-storagegateway\jars\aws-java-sdk-storagegateway-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-route53\jars\aws-java-sdk-route53-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-s3\jars\aws-java-sdk-s3-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-kms\jars\aws-java-sdk-kms-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-importexport\jars\aws-java-sdk-importexport-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-sts\jars\aws-java-sdk-sts-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-sqs\jars\aws-java-sdk-sqs-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-rds\jars\aws-java-sdk-rds-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-redshift\jars\aws-java-sdk-redshift-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-elasticbeanstalk\jars\aws-java-sdk-elasticbeanstalk-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-glacier\jars\aws-java-sdk-glacier-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-sns\jars\aws-java-sdk-sns-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-iam\jars\aws-java-sdk-iam-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-datapipeline\jars\aws-java-sdk-datapipeline-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-elasticloadbalancing\jars\aws-java-sdk-elasticloadbalancing-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-emr\jars\aws-java-sdk-emr-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-elasticache\jars\aws-java-sdk-elasticache-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-elastictranscoder\jars\aws-java-sdk-elastictranscoder-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-ec2\jars\aws-java-sdk-ec2-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-dynamodb\jars\aws-java-sdk-dynamodb-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-cloudtrail\jars\aws-java-sdk-cloudtrail-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-cloudwatch\jars\aws-java-sdk-cloudwatch-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-logs\jars\aws-java-sdk-logs-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-events\jars\aws-java-sdk-events-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-cognitoidentity\jars\aws-java-sdk-cognitoidentity-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-cognitosync\jars\aws-java-sdk-cognitosync-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-directconnect\jars\aws-java-sdk-directconnect-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-cloudformation\jars\aws-java-sdk-cloudformation-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-cloudfront\jars\aws-java-sdk-cloudfront-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-kinesis\jars\aws-java-sdk-kinesis-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-opsworks\jars\aws-java-sdk-opsworks-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-ses\jars\aws-java-sdk-ses-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-autoscaling\jars\aws-java-sdk-autoscaling-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-cloudsearch\jars\aws-java-sdk-cloudsearch-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-cloudwatchmetrics\jars\aws-java-sdk-cloudwatchmetrics-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-swf-libraries\jars\aws-java-sdk-swf-libraries-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-codedeploy\jars\aws-java-sdk-codedeploy-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-codepipeline\jars\aws-java-sdk-codepipeline-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-config\jars\aws-java-sdk-config-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-lambda\jars\aws-java-sdk-lambda-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-ecs\jars\aws-java-sdk-ecs-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-ecr\jars\aws-java-sdk-ecr-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-cloudhsm\jars\aws-java-sdk-cloudhsm-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-ssm\jars\aws-java-sdk-ssm-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-workspaces\jars\aws-java-sdk-workspaces-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-machinelearning\jars\aws-java-sdk-machinelearning-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-directory\jars\aws-java-sdk-directory-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-efs\jars\aws-java-sdk-efs-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-codecommit\jars\aws-java-sdk-codecommit-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-devicefarm\jars\aws-java-sdk-devicefarm-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-elasticsearch\jars\aws-java-sdk-elasticsearch-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-waf\jars\aws-java-sdk-waf-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-marketplacecommerceanalytics\jars\aws-java-sdk-marketplacecommerceanalytics-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-inspector\jars\aws-java-sdk-inspector-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-iot\jars\aws-java-sdk-iot-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.amazonaws\aws-java-sdk-api-gateway\jars\aws-java-sdk-api-gateway-1.10.47.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\com.typesafe\config\1.3.0\bundles\config.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scalamock\scalamock-core_2.11\jars\scalamock-core_2.11-3.2.2.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scalamock\scalamock-scalatest-support_2.11\jars\scalamock-scalatest-support_2.11-3.2.2.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scalatest\scalatest_2.11\bundles\scalatest_2.11-2.2.4.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.scalatest\scalatest_2.11\2.2.4\bundles\scalatest_2.11.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.typesafe.akka\akka-testkit_2.11\jars\akka-testkit_2.11-2.3.3.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-core\jars\powermock-core-1.5.4-sources.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-core\jars\powermock-core-1.5.4.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-core\jars\powermock-core-1.5.4-sources.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-reflect\jars\powermock-reflect-1.5.4-sources.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-reflect\jars\powermock-reflect-1.5.4.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.objenesis\objenesis\jars\objenesis-2.1.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\Scala\activator-dist-1.3.7\repository\org.javassist\javassist\3.18.1-GA\bundles\javassist.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-api-mockito\jars\powermock-api-mockito-1.5.4-sources.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.javassist\javassist\3.18.1-GA\bundles\javassist.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-api-mockito\jars\powermock-api-mockito-1.5.4.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-api-mockito\jars\powermock-api-mockito-1.5.4-sources.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.mockito\mockito-all\jars\mockito-all-1.9.5.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-api-support\jars\powermock-api-support-1.5.4.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-api-support\jars\powermock-api-support-1.5.4-sources.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-api-support\jars\powermock-api-support-1.5.4.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-junit4-common\jars\powermock-module-junit4-common-1.5.4.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-junit4-common\jars\powermock-module-junit4-common-1.5.4-sources.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-junit4\jars\powermock-module-junit4-1.5.4-sources.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-junit4\jars\powermock-module-junit4-1.5.4.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\junit\junit\jars\junit-4.11.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.hamcrest\hamcrest-core\jars\hamcrest-core-1.3.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-junit4-legacy\jars\powermock-module-junit4-legacy-1.5.4-sources.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-junit4\jars\powermock-module-junit4-1.5.4-sources.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\junit\junit\4.11\jars\junit.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.hamcrest\hamcrest-core\1.3\jars\hamcrest-core.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-junit4-legacy\jars\powermock-module-junit4-legacy-1.5.4.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-junit4-legacy\jars\powermock-module-junit4-legacy-1.5.4-sources.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-junit3\jars\powermock-module-junit3-1.5.4.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-junit3\jars\powermock-module-junit3-1.5.4-sources.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-testng\jars\powermock-module-testng-1.5.4-sources.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-testng\jars\powermock-module-testng-1.5.4.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\Scala\activator-dist-1.3.7\repository\org.testng\testng\6.8.7\jars\testng.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\Scala\activator-dist-1.3.7\repository\org.beanshell\bsh\2.0b4\jars\bsh.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\Scala\activator-dist-1.3.7\repository\com.beust\jcommander\1.27\jars\jcommander.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\Scala\activator-dist-1.3.7\repository\org.yaml\snakeyaml\1.12\bundles\snakeyaml.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-testng\jars\powermock-module-testng-1.5.4-sources.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.testng\testng\6.8.7\jars\testng.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.beanshell\bsh\2.0b4\jars\bsh.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\com.beust\jcommander\1.27\jars\jcommander.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.yaml\snakeyaml\1.12\bundles\snakeyaml.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-module-testng-common\jars\powermock-module-testng-common-1.5.4.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-classloading-base\jars\powermock-classloading-base-1.5.4.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.powermock\powermock-classloading-base\jars\powermock-classloading-base-1.5.4-sources.jar"/>
@@ -60,10 +130,10 @@
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.avro\avro-ipc\jars\avro-ipc-1.7.7-tests.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.avro\avro-ipc\jars\avro-ipc-1.7.7.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.avro\avro\jars\avro-1.7.7.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.codehaus.jackson\jackson-core-asl\jars\jackson-core-asl-1.9.13.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.codehaus.jackson\jackson-mapper-asl\jars\jackson-mapper-asl-1.9.13.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.commons\commons-compress\jars\commons-compress-1.4.1.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.tukaani\xz\jars\xz-1.0.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.codehaus.jackson\jackson-core-asl\1.9.13\jars\jackson-core-asl.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.codehaus.jackson\jackson-mapper-asl\1.9.13\jars\jackson-mapper-asl.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.apache.commons\commons-compress\1.4.1\jars\commons-compress.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.tukaani\xz\1.0\jars\xz.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.twitter\chill_2.11\jars\chill_2.11-0.5.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.twitter\chill-java\jars\chill-java-0.5.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.esotericsoftware.kryo\kryo\bundles\kryo-2.21.jar"/>
@@ -73,7 +143,7 @@
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.hadoop\hadoop-client\jars\hadoop-client-2.2.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.hadoop\hadoop-common\jars\hadoop-common-2.2.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.hadoop\hadoop-annotations\jars\hadoop-annotations-2.2.0.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.google.code.findbugs\jsr305\jars\jsr305-1.3.9.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\com.google.code.findbugs\jsr305\1.3.9\jars\jsr305.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\commons-cli\commons-cli\jars\commons-cli-1.2.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.commons\commons-math\jars\commons-math-2.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\xmlenc\xmlenc\jars\xmlenc-0.52.jar"/>
@@ -81,11 +151,11 @@
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\log4j\log4j\bundles\log4j-1.2.17.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\commons-lang\commons-lang\jars\commons-lang-2.5.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\commons-configuration\commons-configuration\jars\commons-configuration-1.6.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\commons-collections\commons-collections\jars\commons-collections-3.2.1.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\commons-collections\commons-collections\3.2.1\jars\commons-collections.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\commons-digester\commons-digester\jars\commons-digester-1.8.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\commons-beanutils\commons-beanutils\jars\commons-beanutils-1.7.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\commons-beanutils\commons-beanutils-core\jars\commons-beanutils-core-1.8.0.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.google.protobuf\protobuf-java\bundles\protobuf-java-2.5.0.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\com.google.protobuf\protobuf-java\2.5.0\bundles\protobuf-java.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.hadoop\hadoop-auth\jars\hadoop-auth-2.2.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.hadoop\hadoop-hdfs\jars\hadoop-hdfs-2.2.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.mortbay.jetty\jetty-util\jars\jetty-util-6.1.26.jar"/>
@@ -93,18 +163,19 @@
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.hadoop\hadoop-mapreduce-client-common\jars\hadoop-mapreduce-client-common-2.2.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.hadoop\hadoop-yarn-common\jars\hadoop-yarn-common-2.2.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.hadoop\hadoop-yarn-api\jars\hadoop-yarn-api-2.2.0.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.slf4j\slf4j-log4j12\jars\slf4j-log4j12-1.7.10.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.google.inject\guice\jars\guice-3.0.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\javax.inject\javax.inject\jars\javax.inject-1.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\aopalliance\aopalliance\jars\aopalliance-1.0.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\javax.inject\javax.inject\1\jars\javax.inject.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\aopalliance\aopalliance\1.0\jars\aopalliance.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.sonatype.sisu.inject\cglib\jars\cglib-2.2.1-v20090111.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.sun.jersey.jersey-test-framework\jersey-test-framework-grizzly2\jars\jersey-test-framework-grizzly2-1.9.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.sun.jersey\jersey-server\bundles\jersey-server-1.9.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\asm\asm\jars\asm-3.2.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\asm\asm\jars\asm-3.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.sun.jersey\jersey-json\bundles\jersey-json-1.9.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.codehaus.jettison\jettison\bundles\jettison-1.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\stax\stax-api\jars\stax-api-1.0.1.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.codehaus.jackson\jackson-jaxrs\jars\jackson-jaxrs-1.8.8.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.codehaus.jackson\jackson-xc\jars\jackson-xc-1.8.8.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.codehaus.jackson\jackson-jaxrs\jars\jackson-jaxrs-1.8.3.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.codehaus.jackson\jackson-xc\jars\jackson-xc-1.8.3.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.sun.jersey.contribs\jersey-guice\jars\jersey-guice-1.9.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.hadoop\hadoop-yarn-client\jars\hadoop-yarn-client-2.2.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.hadoop\hadoop-mapreduce-client-core\jars\hadoop-mapreduce-client-core-2.2.0.jar"/>
@@ -117,9 +188,6 @@
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\io.netty\netty-all\jars\netty-all-4.0.29.Final.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.spark\spark-network-shuffle_2.11\jars\spark-network-shuffle_2.11-1.6.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.fusesource.leveldbjni\leveldbjni-all\bundles\leveldbjni-all-1.8.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.fasterxml.jackson.core\jackson-databind\bundles\jackson-databind-2.4.4.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.fasterxml.jackson.core\jackson-annotations\bundles\jackson-annotations-2.4.4.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.fasterxml.jackson.core\jackson-core\bundles\jackson-core-2.4.4.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.spark\spark-unsafe_2.11\jars\spark-unsafe_2.11-1.6.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\net.java.dev.jets3t\jets3t\jars\jets3t-0.7.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.curator\curator-recipes\bundles\curator-recipes-2.4.0.jar"/>
@@ -132,20 +200,19 @@
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.commons\commons-math3\jars\commons-math3-3.4.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.slf4j\jul-to-slf4j\jars\jul-to-slf4j-1.7.10.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.slf4j\jcl-over-slf4j\jars\jcl-over-slf4j-1.7.10.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.slf4j\slf4j-log4j12\jars\slf4j-log4j12-1.7.10.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.ning\compress-lzf\bundles\compress-lzf-1.0.3.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.xerial.snappy\snappy-java\bundles\snappy-java-1.1.2.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\net.jpountz.lz4\lz4\jars\lz4-1.3.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.roaringbitmap\RoaringBitmap\bundles\RoaringBitmap-0.5.11.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.typesafe.akka\akka-remote_2.11\jars\akka-remote_2.11-2.3.11.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\Scala\activator-dist-1.3.7\repository\com.typesafe.akka\akka-actor_2.11\2.3.11\jars\akka-actor_2.11.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\io.netty\netty\bundles\netty-3.8.0.Final.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.uncommons.maths\uncommons-maths\jars\uncommons-maths-1.2.2a.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\Scala\activator-dist-1.3.7\repository\com.typesafe.akka\akka-slf4j_2.11\2.3.11\jars\akka-slf4j_2.11.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\com.typesafe.akka\akka-actor_2.11\2.3.11\jars\akka-actor_2.11.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\io.netty\netty\3.8.0.Final\bundles\netty.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.uncommons.maths\uncommons-maths\1.2.2a\jars\uncommons-maths.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\com.typesafe.akka\akka-slf4j_2.11\2.3.11\jars\akka-slf4j_2.11.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.json4s\json4s-jackson_2.11\jars\json4s-jackson_2.11-3.2.10.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.json4s\json4s-core_2.11\jars\json4s-core_2.11-3.2.10.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.json4s\json4s-ast_2.11\jars\json4s-ast_2.11-3.2.10.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.thoughtworks.paranamer\paranamer\jars\paranamer-2.6.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.json4s\json4s-core_2.11\3.2.10\jars\json4s-core_2.11.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\org.json4s\json4s-ast_2.11\3.2.10\jars\json4s-ast_2.11.jar"/>
+  <classpathentry kind="lib" path="C:\activator-dist-1.3.10\repository\com.thoughtworks.paranamer\paranamer\2.6\jars\paranamer.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scala-lang\scalap\jars\scalap-2.11.0.jar"/>
   <classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_COMPILER_CONTAINER"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.sun.jersey\jersey-core\bundles\jersey-core-1.9.jar"/>
@@ -175,14 +242,13 @@
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.parquet\parquet-common\jars\parquet-common-1.7.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.parquet\parquet-encoding\jars\parquet-encoding-1.7.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.parquet\parquet-generator\jars\parquet-generator-1.7.0.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\commons-codec\commons-codec\jars\commons-codec-1.5.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.parquet\parquet-hadoop\jars\parquet-hadoop-1.7.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.parquet\parquet-format\jars\parquet-format-2.3.0-incubating.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.parquet\parquet-jackson\jars\parquet-jackson-1.7.0.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.apache.spark\spark-graphx_2.11\jars\spark-graphx_2.11-1.6.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\com.github.fommil.netlib\core\jars\core-1.1.2.jar"/>
-  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\net.sourceforge.f2j\arpack_combined_all\jars\arpack_combined_all-0.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\net.sourceforge.f2j\arpack_combined_all\jars\arpack_combined_all-0.1-javadoc.jar"/>
+  <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\net.sourceforge.f2j\arpack_combined_all\jars\arpack_combined_all-0.1.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scalanlp\breeze_2.11\jars\breeze_2.11-0.11.2.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\org.scalanlp\breeze-macros_2.11\jars\breeze-macros_2.11-0.11.2.jar"/>
   <classpathentry kind="lib" path="C:\Users\marco\.ivy2\cache\net.sf.opencsv\opencsv\jars\opencsv-2.3.jar"/>

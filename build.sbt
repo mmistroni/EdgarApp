@@ -45,5 +45,6 @@ libraryDependencies += "org.apache.spark" %% "spark-core"   % "1.6.1" % "provide
 libraryDependencies += "org.apache.spark" %% "spark-streaming"   % "1.6.1" % "provided"
 libraryDependencies += "org.apache.spark" %% "spark-mllib"   % "1.6.1"  % "provided"
 libraryDependencies += "com.typesafe" % "config" % "1.2.1"
+libraryDependencies += "com.mm" %% "sparkutilities" % "1.0"
 resolvers += "softprops-maven" at "http://dl.bintray.com/content/softprops/maven"
 
