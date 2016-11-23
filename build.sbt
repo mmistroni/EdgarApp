@@ -17,6 +17,7 @@ mainClass in assembly :=   Some("EdgarActorRunner")
 assemblyMergeStrategy in assembly := {
   case PathList("javax", "mail", xs @ _*)         => MergeStrategy.first
   case PathList("com", "sun", xs @ _*)         => MergeStrategy.first
+  case PathList("org", "slf4j", xs @ _*)         => MergeStrategy.first
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)
@@ -24,7 +25,6 @@ assemblyMergeStrategy in assembly := {
 
 // Add a single dependency
 libraryDependencies += "junit" % "junit" % "4.8" % "test"
-libraryDependencies += "com.netflix.rxjava" % "rxjava-scala" % "0.19.1"
 libraryDependencies += "org.scala-lang" % "scala-swing" % "2.11+"
 libraryDependencies += "commons-io" % "commons-io" % "2.4"
 libraryDependencies += "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.5"
@@ -32,8 +32,10 @@ libraryDependencies += "commons-net" % "commons-net" % "3.4"
 libraryDependencies += "org.scalamock" % "scalamock-core_2.11" % "3.2.2" % "test"
 libraryDependencies += "org.scalamock" % "scalamock-scalatest-support_2.11" % "3.2.2" % "test"
 libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test"
-libraryDependencies += "com.typesafe.akka" % "akka-actor_2.11" % "2.3.3"
-libraryDependencies += "com.typesafe.akka" % "akka-testkit_2.11" % "2.3.3" % "test"
+libraryDependencies += "com.typesafe.akka" % "akka-actor_2.11" % "2.4.1"
+libraryDependencies += "com.typesafe.akka" % "akka-testkit_2.11" % "2.4.1" % "test"
+libraryDependencies += "com.typesafe.akka" %% "akka-slf4j" % "2.4.1"
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.0.13"
 libraryDependencies += "org.mockito" % "mockito-core" % "1.9.5"
 libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.5",
                             "org.slf4j" % "slf4j-simple" % "1.7.5",

@@ -8,10 +8,12 @@ import akka.actor.SupervisorStrategy.{ Resume, Escalate, Restart }
 import akka.event.Logging
 import edgar.core.IndexProcessor
 
-class IndexProcessorActor(indexProcessor: IndexProcessor, edgarFileManager: ActorRef) extends Actor {
+class IndexProcessorActor(indexProcessor: IndexProcessor, edgarFileManager: ActorRef) 
+      extends Actor {
 
+  
     val log = Logging(context.system, this)
-
+  
     def receive = {
 
       case EdgarRequests.ProcessIndexFile(fileContent: String) => {

@@ -5,7 +5,7 @@ import akka.event.Logging
 import edgar.core.EdgarSink
 
 
-class EdgarFileSinkActor(sink: EdgarSink) extends Actor {
+class EdgarFileSinkActor(sink: EdgarSink) extends Actor with edgar.util.LogHelper {
     val log = Logging(context.system, this)
     var count = 0
     
@@ -20,7 +20,7 @@ class EdgarFileSinkActor(sink: EdgarSink) extends Actor {
       }
       
       case Terminated => {
-        log.info("We should send all messages now..")
+        logger.info("We should send all messages now..")
         sink.emptySink()
         context.system.shutdown()
       }

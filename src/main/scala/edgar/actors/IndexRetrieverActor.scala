@@ -9,9 +9,10 @@ import edgar.ftp.FtpClient
 class IndexRetrieverActor(indexProcessor: ActorRef,
                             downloader: ActorRef,
                             ftpClient: FtpClient,
-                            indexDir: String) extends Actor {
-
+                            indexDir: String) extends Actor  {
+  
     val log = Logging(context.system, this)
+                        
 
     def receive = {
       case EdgarRequests.DownloadLatestIndex => {

@@ -18,11 +18,13 @@ object DownloadManager {
     case class DownloadFailed(fileContent: String, origin: ActorRef, downloader: ActorRef)
   }
 
-class ChildDownloader(ftpClient: FtpClient) extends Actor {
+class ChildDownloader(ftpClient: FtpClient) extends Actor   {
 
     import DownloadManager._
     val log = Logging(context.system, this)
 
+    
+    
     override def preStart(): Unit = {
       log.info("Starting downloader again")
     }
@@ -62,15 +64,16 @@ class ChildDownloader(ftpClient: FtpClient) extends Actor {
   }
 
   class DownloadManager(downloadSlots: Int,
-                        factory: DefaultFactory) extends Actor {
+                        factory: DefaultFactory) extends Actor with edgar.util.LogHelper {
     // This class has been copied from 'Learning Concurrent Programming in Scala'
     import scala.collection._
     import DownloadManager._
 
-    val log = Logging(context.system, this)
     val downloaders = mutable.Queue[ActorRef]()
     val pendingWork = mutable.Queue[Download]()
     val workItems = mutable.Map[ActorRef, Download]()
+    val log = Logging(context.system, this)
+
 
     override val supervisorStrategy =
       OneForOneStrategy(
@@ -117,7 +120,7 @@ class ChildDownloader(ftpClient: FtpClient) extends Actor {
           dl ! item
           workItems(dl) = item
         } catch {
-          case ioe: java.lang.Exception => log.info("Exception in checkDownoad. should remove msg")
+          case ioe: java.lang.Exception => logger.info("Exception in checkDownoad. should remove msg")
         }
       }
     }
@@ -127,7 +130,7 @@ class ChildDownloader(ftpClient: FtpClient) extends Actor {
           pendingWork.enqueue(Download(filePath, sender))
           checkDownloads()
         } catch {
-          case ioe: java.lang.Exception => log.info("Downloadmgr.exception:" + ioe.getMessage())
+          case ioe: java.lang.Exception => logger.info("Downloadmgr.exception:" + ioe.getMessage())
         }
 
       case DownloadFailed(path, origin, actorRef) =>
