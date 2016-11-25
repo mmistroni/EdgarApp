@@ -1,0 +1,7 @@
+show java-home
+show java
+java -version
+javaHome
+show javaSource
+show javaHome
+exit
