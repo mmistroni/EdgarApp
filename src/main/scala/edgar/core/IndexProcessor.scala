@@ -15,7 +15,7 @@ class IndexProcessorImpl(filterFunction: EdgarFilter) extends IndexProcessor wit
           arr(2), arr(1),
           arr(4)))
       // temporarily limiting to 600 entries until FTP issues are resolved
-      val res = lines.filter(filterFunction).slice(0, 600)
+      val res = lines.filter(filterFunction)
       logger.info("Outpupt lines are:" + res.size)
       res
     }

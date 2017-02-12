@@ -3,7 +3,7 @@ package edgar.ftp
 trait EdgarModule {
   val ftpClient: FtpClient
 
-  def list(dirName: String): List[String] = {
+  def list(dirName: String): Seq[String] = {
     ftpClient.listDirectory(dirName)
   }
 

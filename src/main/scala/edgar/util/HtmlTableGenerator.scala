@@ -18,6 +18,7 @@ object HtmlTableGenerator {
     sb.append("</table>")
     sb.append("<br/><br/><br/>")
     
+    /**
     sb.append("<p> More Details </p><br/><br/>")
     
     
@@ -25,7 +26,10 @@ object HtmlTableGenerator {
             .append("<th>InstitutionalManager</th><th>Securities Held</th>")
     inputMap.toList.foreach(tpl => sb.append("<tr><td align=\"center\">").append(tpl._1).append("</td><td>")
           .append(tpl._2).append("</td></tr>"))
-    sb.append("</table></body></html>")
+    sb.append("</table>")
+    * </body></html>")
+    */
+    sb.append("</body></html>")
     sb.toString
   }
   

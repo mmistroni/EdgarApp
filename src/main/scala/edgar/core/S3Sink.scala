@@ -1,40 +1,65 @@
 package edgar.core
 import edgar.email.{ CommonsNetEmailSender, EmailConfig }
-import amazon.util.AWSClientFactory
+import amazon.util.AWSClient
 import com.typesafe.config.Config
 
 /**
  * This module needs an unit test!!!
  */
 
-class S3Sink(config: EmailConfig, appConfig: Config) extends OutputStreamSink with CommonsNetEmailSender {
-  override val mailConfigProperties = config
-  private val bucketName = "edgar-bucket-mm"
-  private val s3Client = AWSClientFactory.s3Client(appConfig.getString("aws.accessKey"),
-    appConfig.getString("aws.secretKey"))
-
+class S3Sink(appConfig: Config) extends OutputStreamSink with AWSClient {
+  private [core] val bucketName = "edgar-bucket-mm"
+  private [core] val topicName = "arn:aws:sns:us-west-2:049597339122:EdgarSMSPublisher"
+  private [core] val emailTopicName = "arn:aws:sns:us-west-2:049597339122:SharesNotificationList"
+  
+  
   import edgar.util.HtmlTableGenerator._
 
   override def emptySink = {
-    logger.info("MyEmailSink. calling super empty sink")
     super.emptySink
-    logger.info("And now displaying mail properties..")
-    logger.info(mailConfigProperties.toProperties)
-    logger.info("Sending Content to:" + appConfig.getString("smtp.recipients"))
-    val content = generateHtmlTable(this.securitesMap)
-
-    sendMail("Edgar Institutional Investor Securities", content, appConfig.getString("smtp.recipients"))
-
-    storeSecuritiesFile
+    
+    if (this.securitesMap.size > 0) {
+      logger.info("Sending Content to:" + appConfig.getString("smtp.recipients"))
+      val content = generateHtmlTable(this.securitesMap)
+      storeSecuritiesFile
+      publishToRecipients(content)
+    } else {
+      logger.info(s"Found no securities in ${createFileName}. Notifying clients..")
+      snsClient.publishToTopic(topicName, "Edgar S3 Upload", "no content found")
+    }
+  }
+  
+  def createFileName = {
+    import java.text._
+    val fileTimestamp = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date())
+    s"data/$fileTimestamp-securites.txt"
+    
+  }
+  
+  def publishToRecipients(emailContent:String) = {
+    val recipients  = appConfig.getString("smtp.recipients").split(",").toSeq
+    logger.info("Dropping messag to SESClient")
+    sesClient.sendEmail(recipients, "EdgarInstitutionalInvestors", emailContent)  
+  }
+  
+  
+  def createFileContent = {
+    if (securitesMap.size > 0) securitesMap.values.flatten.mkString("\n") else ""
   }
 
   def storeSecuritiesFile = {
-    import java.text._
-    val fileTimestamp = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date())
-    val fileName = s"data/$fileTimestamp-securites.txt"
-    val securitiesString = securitesMap.values.flatten.mkString("\n")
-    logger.info("Now attempting to store data in S3")
-    s3Client.storeOnS3(bucketName, fileName, securitiesString)
+    
+    val securitiesString = createFileContent
+    
+    if (securitiesString.length > 0) {
+      val s3Sink = s3Client
+      logger.info(s"Now attempting to store data in S3. Size of the data is:${securitiesString.length}")
+      s3Sink.storeOnS3(bucketName, createFileName, securitiesString)
+    } else {
+      logger.info(s"Found no securities in ${createFileName}. Notifying clients..")
+      val snsSink = snsClient
+      snsClient.publishToTopic(topicName, "Edgar S3 Upload", "no content found")
+    }
     logger.info("Outta here...")
 
   }

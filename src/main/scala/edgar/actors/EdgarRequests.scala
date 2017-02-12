@@ -40,6 +40,11 @@ object EdgarRequests extends LogHelper {
 
     case class FilingXBRLInfo(contentList: XBRLFiling) extends EdgarResponse
 
+    case class SNSMessage(content:String) extends EdgarResponse
+    
+    case class EdgarAggregatorMessage(content:Map[String, String]) extends EdgarResponse
+    
+    
     case object Shutdown
 
     def createEdgarFilingMessage(filing: EdgarFiling): EdgarRequest = filing.formType match {

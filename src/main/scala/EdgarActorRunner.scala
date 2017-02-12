@@ -30,26 +30,16 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
   }
   
   
-  def launchActorSystem(conf:Config) = {
+  def launchActorSystem(appConfig:Config) = {
     
     
     val system = ActorSystem("Edgar-Filings-Downloader")
     val downloader =
       system.actorOf(Props(classOf[DownloadManager], 3, factory), "DownloadManager")
      
+    println("Recipients:" + appConfig.getString("smtp.recipients"))
       
-    val config = new EmailConfig {
-      override val username = conf.getString("smtp.username")
-      override val password = conf.getString("smtp.password")
-      override val host = conf.getString("smtp.host")
-      override val port = conf.getInt("smtp.port")
-      override val fromAddress  = "noreply@worlcorpservices.com"
-    }  
-    
-    println("Starting Actor system. Email properties are:" + config.toProperties)
-    println("Recipients:" + conf.getString("smtp.recipients"))
-      
-    val emailSink = new S3Sink(config, conf)
+    val emailSink = new S3Sink(appConfig)
     
     val edgarFileSink = system.actorOf(Props(classOf[EdgarFileSinkActor], 
         emailSink
@@ -62,15 +52,15 @@ object EdgarActorRunner extends App with edgar.util.LogHelper {
       edgarFileManager), "IndexProcessor")
   
     val indexRetriever = system.actorOf(Props(classOf[IndexRetrieverActor],
-      indexProcessor, downloader, factory.edgarFtpClient(UUID.randomUUID().toString() + "@downloader.com"),
-      "edgar/daily-index"), "IndexRetriever")
+      indexProcessor, downloader, factory.edgarFtpClient("https://www.sec.gov/Archives/" ),
+      "edgar/daily-index/"), "IndexRetriever")
   
     val master = system.actorOf(Props(classOf[EdgarMaster],
       indexRetriever, downloader,
       indexProcessor,
       edgarFileManager), "Master")
 
-    println("Scheduling timeout...")
+    logger.info("Scheduling timeout...")
     import scala.concurrent.duration.Duration;
     import java.util.concurrent.TimeUnit;
     // Creating Timer

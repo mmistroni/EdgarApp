@@ -20,19 +20,19 @@ object ExampleApp extends App with LogHelper {
   import edgar.core.EdgarFactory
   
   val filterFunction = formType2In(Seq("4"))  // filtering form 4
-  val indexDir = "edgar/daily-index"
+  val indexDir = "https://www.sec.gov/Archives/" //edgar/daily-index/"
   val indexProcessor = new IndexProcessorImpl(filterFunction)
   
   def getFtpClient() = {
-    EdgarFactory.edgarFtpClient(UUID.randomUUID().toString() + "@downloader.com")
+    EdgarFactory.edgarFtpClient(indexDir)
   }
   
   def getIndexFile() = {
     // Picking latest edgar index File
-    val latestEdgarFileName = getFtpClient().listDirectory(indexDir).last
+    val latestEdgarFileName = getFtpClient().listDirectory("edgar/daily-index/").last
     logger.info("Latest fileName is:" + latestEdgarFileName)
     // download it
-    getFtpClient().retrieveFile(s"$indexDir/$latestEdgarFileName")
+    getFtpClient().retrieveFile(s"$latestEdgarFileName")
   }
   
   def processIndexFile(indexFileContent:String) = {

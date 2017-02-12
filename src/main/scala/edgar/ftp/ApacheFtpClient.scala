@@ -9,9 +9,9 @@ import java.util.zip.ZipInputStream
 import org.apache.commons.io.IOUtils
 
 
-trait ApacheFTPClient extends FtpClient {
+trait ApacheFTPClient extends FtpClient with edgar.util.LogHelper {
 
-  lazy val ftpClient = new FTPClient()
+  lazy val ftpClient = new FTPClient() // Commons.Net FTP client
   val ftpConfig: FtpConfig
 
   protected def readStream(is: InputStream) = {
@@ -33,13 +33,11 @@ trait ApacheFTPClient extends FtpClient {
   }
 
   private def connect() = {
-
+    logger.info("connecting to :" + ftpConfig.host)
     ftpClient.connect(ftpConfig.host)
     ftpClient.login(ftpConfig.username, ftpConfig.password)
     ftpClient.enterLocalPassiveMode
-    //ftpClient.setFileType(BINARY_FILE_TYPE)
-    //ftpClient.setRemoteVerificationEnabled(false)
-    //ftpClient.setControlKeepAliveTimeout(300)
+    
   }
 
   def connected: Boolean = ftpClient.isConnected

@@ -3041,7 +3041,7 @@
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-sbt#apply-macro;0.13.8!apply-macro.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#jline;2.10.4!jline.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.fusesource.jansi#jansi;1.4!jansi.jar[0m
-[0m[[0mdebug[0m] [0m:: resolution report :: resolve 12869ms :: artifacts dl 741ms[0m
+[0m[[0mdebug[0m] [0m:: resolution report :: resolve 6875ms :: artifacts dl 248ms[0m
 [0m[[0mdebug[0m] [0m	report for default#testsbtproject-build;0.1-SNAPSHOT compile produced in C:\Users\marco\testsbtproject\project\target\resolution-cache\reports\default-testsbtproject-build-compile.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#testsbtproject-build;0.1-SNAPSHOT runtime produced in C:\Users\marco\testsbtproject\project\target\resolution-cache\reports\default-testsbtproject-build-runtime.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#testsbtproject-build;0.1-SNAPSHOT test produced in C:\Users\marco\testsbtproject\project\target\resolution-cache\reports\default-testsbtproject-build-test.xml[0m
@@ -3055,5 +3055,5 @@
 [0m[[0mdebug[0m] [0m	report for default#testsbtproject-build;0.1-SNAPSHOT docs produced in C:\Users\marco\testsbtproject\project\target\resolution-cache\reports\default-testsbtproject-build-docs.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#testsbtproject-build;0.1-SNAPSHOT pom produced in C:\Users\marco\testsbtproject\project\target\resolution-cache\reports\default-testsbtproject-build-pom.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#testsbtproject-build;0.1-SNAPSHOT scala-tool produced in C:\Users\marco\testsbtproject\project\target\resolution-cache\reports\default-testsbtproject-build-scala-tool.xml[0m
-[0m[[0mdebug[0m] [0m	resolve done (12869ms resolve - 741ms download)[0m
+[0m[[0mdebug[0m] [0m	resolve done (6875ms resolve - 248ms download)[0m
 [0m[[0minfo[0m] [0mDone updating.[0m

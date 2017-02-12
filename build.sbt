@@ -42,10 +42,19 @@ libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.5",
 libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4"
 libraryDependencies += "org.apache.commons" % "commons-email" % "1.4"
 libraryDependencies += "org.powermock" % "powermock-mockito-release-full" % "1.5.4" % "test"
-libraryDependencies += "org.apache.spark" %% "spark-core"   % "1.6.1" % "provided"
-libraryDependencies += "org.apache.spark" %% "spark-streaming"   % "1.6.1" % "provided"
-libraryDependencies += "org.apache.spark" %% "spark-mllib"   % "1.6.1"  % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-core"   % "2.1.0" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-streaming"   % "2.1.0" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-mllib"   % "2.1.0"  % "provided"
 libraryDependencies += "com.typesafe" % "config" % "1.2.1"
-libraryDependencies += "com.mm" %% "sparkutilities" % "1.0"
+libraryDependencies += "com.owlike" %% "genson-scala" % "1.4" 
+libraryDependencies += "net.liftweb" %% "lift-json" % "2.6.3"
+libraryDependencies += "com.amazonaws" % "aws-java-sdk" % "1.10.47"
+  
+unmanagedJars in Compile ++= {
+  val libs = baseDirectory.value / "lib"
+  ((libs) ** "*.jar").classpath
+}
+
 resolvers += "softprops-maven" at "http://dl.bintray.com/content/softprops/maven"
+
 

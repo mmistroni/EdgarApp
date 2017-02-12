@@ -10,6 +10,8 @@ import scala.io._
 import scala.xml.XML
 
 import edgar.ftp._
+
+/**
 object FutureEdgarRunner extends App {
   println("Kicking off EdgarModule")
 
@@ -65,3 +67,4 @@ object FutureEdgarRunner extends App {
   Thread.sleep(30000)
 
 }
+**/

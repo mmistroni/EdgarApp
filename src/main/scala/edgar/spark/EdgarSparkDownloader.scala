@@ -29,6 +29,7 @@ object EdgarSparkDownloader {
     val factory  =EdgarFactory
     val ftpClient = factory.edgarFtpClient(java.util.UUID.randomUUID().toString() + "@downloader.com")
     ftpClient.retrieveFile(fileName)
+    
   }
   
   def parseXmlFile(fileContent:String) = {
@@ -44,9 +45,9 @@ object EdgarSparkDownloader {
   }
   
   def processFiles():Unit = {
-    val conf = new SparkConf().setAppName("Simple Application")
+    val conf = new SparkConf().setAppName("Simple Application").setMaster("local")
     val sc = new SparkContext(conf)
-    val lines = sc.textFile("file:///c:/Users/marco/testsbtproject/masterq3.gz", 2)
+    val lines = sc.textFile("file:///c:/Users/marco/testsbtproject/masterq3.gz",1).sample(false, 0.01)
     
     // cik|xxx
     val filtered = lines.map(l => l.split('|')).filter(arr=> arr.length > 2).map(arr => (arr(0),arr(2), arr(4))).zipWithIndex
@@ -63,7 +64,8 @@ object EdgarSparkDownloader {
     //val buffer = new StringBuffer()
     
     //fin.foreach(tpl=>buffer.append(tpl.toString))
-    fin.saveAsTextFile("all_data.txt")
+    println("Saving as tex tfile..")
+    fin.saveAsTextFile("all_data2.txt")
     //fin.foreach(println)
     
     

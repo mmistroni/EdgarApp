@@ -22,6 +22,7 @@ class EdgarFileSinkActor(sink: EdgarSink) extends Actor with edgar.util.LogHelpe
       case Terminated => {
         logger.info("We should send all messages now..")
         sink.emptySink()
+        logger.info("Shutting down.....")
         context.system.shutdown()
       }
       

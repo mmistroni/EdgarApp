@@ -17,8 +17,8 @@ class IndexRetrieverActor(indexProcessor: ActorRef,
     def receive = {
       case EdgarRequests.DownloadLatestIndex => {
         val latestFile = ftpClient.listDirectory(indexDir).last
-        log.debug(s"Sending data to downloader to retireve:$latestFile")
-        downloader ! EdgarRequests.DownloadFile(s"$indexDir/$latestFile")
+        log.info(s"Sending data to downloader to retireve:$latestFile")
+        downloader ! EdgarRequests.DownloadFile(s"$latestFile")
       }
       case EdgarRequests.FileContent(content) => {
         log.info("Master.+call processor.")

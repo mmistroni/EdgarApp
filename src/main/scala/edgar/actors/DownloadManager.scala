@@ -66,6 +66,8 @@ class ChildDownloader(ftpClient: FtpClient) extends Actor   {
   class DownloadManager(downloadSlots: Int,
                         factory: DefaultFactory) extends Actor with edgar.util.LogHelper {
     // This class has been copied from 'Learning Concurrent Programming in Scala'
+    // we should initialize it with the ftpClient instead, as now we use Https..
+
     import scala.collection._
     import DownloadManager._
 
