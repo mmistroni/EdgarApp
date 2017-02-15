@@ -3,6 +3,9 @@ package edgar.spark
 import edgar.ftp._
 import edgar.core._
 import scala.xml._
+import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 
 import org.apache.spark._
 
@@ -25,29 +28,34 @@ case class Form4Filing(issuerName:String, issuerCik:String, reportingOwnerCik:St
     
 object EdgarSparkDownloader {
   
-  def downloadFtpFile(fileName:String):String = {
+  def downloadFtpFile(fileName:String):Try[String] = {
+    // TODO: replace with scala Try
     val factory  =EdgarFactory
     val ftpClient = factory.edgarFtpClient(java.util.UUID.randomUUID().toString() + "@downloader.com")
-    ftpClient.retrieveFile(fileName)
+    Try(ftpClient.retrieveFile(fileName))
     
   }
   
   def parseXmlFile(fileContent:String) = {
-   val content = fileContent.substring(fileContent.indexOf("?>") + 2, fileContent.indexOf("</XML"))
-   val xml = XML.loadString(content)
-      val formType = xml \\ "submissionType"
-      val issuerName = xml \\ "issuerName"
-      val issuerCik = xml \\ "issuerCik"
-      val reportingOwnerCik = xml \\ "rptOwnerCik"
-      val transactionCode = xml \\ "transactionCode"
-          (reportingOwnerCik.text, transactionCode.text)
-         //Form4Filing(issuerName.text, issuerCik.text, reportingOwnerCik.text, transactionCode.text)
+   if (fileContent.length() > 0) {
+    val content = fileContent.substring(fileContent.indexOf("?>") + 2, fileContent.indexOf("</XML"))
+    val xml = XML.loadString(content)
+    val formType = xml \\ "submissionType"
+    val issuerName = xml \\ "issuerName"
+    val issuerCik = xml \\ "issuerCik"
+    val reportingOwnerCik = xml \\ "rptOwnerCik"
+    val transactionCode = xml \\ "transactionCode"
+    (reportingOwnerCik.text, transactionCode.text)
+             
+  } else {
+      ("Unknown", "-1")
+    }
   }
   
   def processFiles():Unit = {
     val conf = new SparkConf().setAppName("Simple Application").setMaster("local")
     val sc = new SparkContext(conf)
-    val lines = sc.textFile("file:///c:/Users/marco/testsbtproject/masterq3.gz",1).sample(false, 0.01)
+    val lines = sc.textFile("file:///c:/Users/marco/testsbtproject/masterq3.gz",1)
     
     // cik|xxx
     val filtered = lines.map(l => l.split('|')).filter(arr=> arr.length > 2).map(arr => (arr(0),arr(2), arr(4))).zipWithIndex
@@ -58,24 +66,33 @@ object EdgarSparkDownloader {
     println("Now Reducing..." +  noHeaders.count())
     noHeaders.take(15).foreach(println)
     println("Now downloading..." + noHeaders.count())
-    val fin = noHeaders.map(fileName => downloadFtpFile(fileName)).map(parseXmlFile) 
+    val edgarXmlContent = noHeaders.map(fileName => downloadFtpFile(fileName))
+    
+    val fin = edgarXmlContent.filter(t => t.isSuccess)
+          .map(item => item.get)
+          .map(parseXmlFile) 
     
     // Does not work///
     //val buffer = new StringBuffer()
     
     //fin.foreach(tpl=>buffer.append(tpl.toString))
-    println("Saving as tex tfile..")
-    fin.saveAsTextFile("all_data2.txt")
+    val fileName = getFileName
+    println(s"Saving as tex tfile.:")
+    fin.saveAsTextFile("all_data-test.txt")
     //fin.foreach(println)
     
     
     println("Exiting..")
-    //val reduced = fin.reduceByKey((transCode1, transCode2) => transCode1 + transCode2)
-    //reduced.foreach(println)
-    
     
     
   }
+  
+  def getFileName = {
+    import java.text.SimpleDateFormat
+    val formatter = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm")
+    s"data-${formatter.format(new java.util.Date())}.txt"
+  }
+  
   
   def main(args: Array[String]) {
     processFiles

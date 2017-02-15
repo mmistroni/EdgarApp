@@ -1,0 +1,13 @@
+2017-02-13 20:59:17,801,Outpupt lines are:1
+2017-02-13 20:59:17,817,Procesing index file...
+2017-02-13 20:59:17,818,Outpupt lines are:0
+2017-02-13 20:59:18,057,Crawling directory:https://www.sec.gov/Archives//testDirName
+2017-02-13 21:48:45,230,Crawling directory:https://www.sec.gov/Archives//testDirName
+2017-02-15 21:07:30,147,Crawling directory:https://www.sec.gov/Archives//testDirName
+2017-02-15 21:53:20,981,Crawling directory:https://www.sec.gov/Archives//testDirName
+2017-02-15 22:17:51,037,Now attempting to store data in S3. Size of the data is:15
+2017-02-15 22:17:51,054,Outta here...
+2017-02-15 22:17:51,080,Found no securities in testFileName. Notifying clients..
+2017-02-15 22:17:51,086,Outta here...
+2017-02-15 22:17:51,162,Dropping messag to SESClient
+2017-02-15 22:25:59,276,Crawling directory:https://www.sec.gov/Archives//testDirName
