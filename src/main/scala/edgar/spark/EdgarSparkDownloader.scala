@@ -6,6 +6,7 @@ import scala.xml._
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
+import org.apache.spark.rdd._
 
 import org.apache.spark._
 
@@ -52,34 +53,54 @@ object EdgarSparkDownloader {
     }
   }
   
-  def processFiles():Unit = {
-    val conf = new SparkConf().setAppName("Simple Application").setMaster("local")
-    val sc = new SparkContext(conf)
-    val lines = sc.textFile("file:///c:/Users/marco/testsbtproject/masterq3.gz",1)
-    
+  def store(rdd:RDD[(String, String)]) = {
+    val fileName = getFileName
+    println(s"Saving as tex tfile.:")
+    rdd.saveAsTextFile("all_data-test.txt")
+      
+  }
+  
+  
+  def normalize(linesRdd:RDD[String]) = {
     // cik|xxx
-    val filtered = lines.map(l => l.split('|')).filter(arr=> arr.length > 2).map(arr => (arr(0),arr(2), arr(4))).zipWithIndex
-
+    val filtered = linesRdd.map(l => l.split('|')).filter(arr=> arr.length > 2).map(arr => (arr(0),arr(2), arr(4))).zipWithIndex
     val noHeaders = filtered.filter( tpl => tpl._2 > 0).map(tpl => tpl._1).filter(tpl => tpl._2 == "4").map(tpl => tpl._3)
-    
     noHeaders.cache()
-    println("Now Reducing..." +  noHeaders.count())
-    noHeaders.take(15).foreach(println)
-    println("Now downloading..." + noHeaders.count())
-    val edgarXmlContent = noHeaders.map(fileName => downloadFtpFile(fileName))
+    noHeaders
+  }
     
-    val fin = edgarXmlContent.filter(t => t.isSuccess)
+  def extractFilingData(noHeaders:RDD[String]):RDD[(String, String)] = {
+    val edgarXmlContent = noHeaders.map(fileName => downloadFtpFile(fileName))
+    println("######################### RETRIEVING ####################")
+    edgarXmlContent.filter(t => t.isSuccess)
           .map(item => item.get)
           .map(parseXmlFile) 
     
-    // Does not work///
-    //val buffer = new StringBuffer()
+  }
+  
+  def processFiles(debugFlag:Boolean=true, fileName:String = "file:///c:/Users/marco/testsbtproject/masterq3.gz"):Unit = {
+    val conf = new SparkConf().setAppName("Simple Application").setMaster("local")
+    val sc = new SparkContext(conf)
+    val lines = sc.textFile(fileName,1)
     
-    //fin.foreach(tpl=>buffer.append(tpl.toString))
-    val fileName = getFileName
-    println(s"Saving as tex tfile.:")
-    fin.saveAsTextFile("all_data-test.txt")
-    //fin.foreach(println)
+    val debugged = debugFlag match {
+      case false => lines
+      case true => lines.sample(false, 0.001)
+    }
+    
+    
+    val noHeaders = normalize(debugged)
+    println("###################Now downloading..." + noHeaders.count())
+    val fin = extractFilingData(noHeaders)
+    println("######################### REDUCING AND SORTING ###############")
+    val reduced = fin.reduceByKey((first, second) => first + second)
+    if (debugFlag) {
+      println("Printing reduced size result..")
+      reduced.sortBy(tpl => tpl._2.length(), false).take(20).foreach(println)
+    } else {
+      println("Storing reuslts...")
+      store(reduced)
+    }
     
     
     println("Exiting..")
@@ -95,6 +116,8 @@ object EdgarSparkDownloader {
   
   
   def main(args: Array[String]) {
-    processFiles
+    println(s"Input Args:" + args.mkString(","))
+    val debug = args(0).toBoolean
+    processFiles(debug)
   } 
 }
